@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes &#8212; sphinx-verilog-domain 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="http://livejs.com/live.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="notes">
+<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+<p>Page 696</p>
+<div class="section" id="non-ansi-style-separate-port-spec">
+<h3>Non-ANSI style (separate port spec)<a class="headerlink" href="#non-ansi-style-separate-port-spec" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="simplified-syntax">
+<h4>Simplified syntax<a class="headerlink" href="#simplified-syntax" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module_nonansi_header</span> <span class="p">:</span><span class="o">:=</span>
+        <span class="p">{</span> <span class="n">attribute_instance</span> <span class="p">}</span> <span class="n">module_keyword</span> <span class="p">[</span> <span class="n">lifetime</span> <span class="p">]</span> <span class="n">module_identifier</span>
+        <span class="p">{</span> <span class="n">package_import_declaration</span> <span class="p">}</span> <span class="p">[</span> <span class="n">parameter_port_list</span> <span class="p">]</span> <span class="n">list_of_ports</span> <span class="p">;</span>
+<span class="n">list_of_ports</span> <span class="p">:</span><span class="o">:=</span> <span class="s2">&quot;(&quot;</span> <span class="n">port</span> <span class="p">{</span> <span class="s2">&quot;,&quot;</span> <span class="n">port</span> <span class="p">}</span> <span class="s2">&quot;)&quot;</span>
+<span class="n">port</span> <span class="p">:</span><span class="o">:=</span>
+        <span class="p">[</span> <span class="n">port_expression</span> <span class="p">]</span>
+        <span class="o">|</span> <span class="s2">&quot;.&quot;</span> <span class="n">port_identifier</span> <span class="s2">&quot;(&quot;</span> <span class="p">[</span> <span class="n">port_expression</span> <span class="p">]</span> <span class="s2">&quot;)&quot;</span>
+<span class="n">port_expression</span> <span class="p">:</span><span class="o">:=</span>
+        <span class="n">port_reference</span>
+        <span class="o">|</span> <span class="s2">&quot;{&quot;</span> <span class="n">port_reference</span> <span class="p">{</span> <span class="s2">&quot;,&quot;</span> <span class="n">port_reference</span> <span class="p">}</span> <span class="s2">&quot;}&quot;</span>
+<span class="n">port_reference</span> <span class="p">:</span><span class="o">:=</span>
+        <span class="n">port_identifier</span> <span class="n">constant_select</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="examples">
+<h4>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h4>
+<p>FIXME: Taken from spec. Do not use in public repo.</p>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">test</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">h</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">complex_ports</span> <span class="p">(</span> <span class="p">{</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">},</span> <span class="p">.</span><span class="n">e</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">);</span>
+    <span class="c1">// Nets {c,d} receive the first port bits.</span>
+    <span class="c1">// Name &#39;f&#39; is declared inside the module.</span>
+    <span class="c1">// Name &#39;e&#39; is defined outside the module.</span>
+    <span class="c1">// Cannot use named port connections of first port.</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">split_ports</span> <span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">4</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mh">3</span><span class="o">:</span><span class="mh">0</span><span class="p">]);</span>
+    <span class="c1">// First port is upper 4 bits of &#39;a&#39;.</span>
+    <span class="c1">// Second port is lower 4 bits of &#39;a&#39;.</span>
+    <span class="c1">// Cannot use named port connections because</span>
+    <span class="c1">// of part-select port &#39;a&#39;.</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">same_port</span> <span class="p">(.</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="p">.</span><span class="n">b</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+    <span class="c1">// Name &#39;i&#39; is declared inside the module as an inout port.</span>
+    <span class="c1">// Names &#39;a&#39; and &#39;b&#39; are defined for port connections.</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">renamed_concat</span> <span class="p">(.</span><span class="n">a</span><span class="p">({</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">}),</span> <span class="n">f</span><span class="p">,</span> <span class="p">.</span><span class="n">g</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mh">1</span><span class="p">]));</span>
+    <span class="c1">// Names &#39;b&#39;, &#39;c&#39;, &#39;f&#39;, &#39;h&#39; are defined inside the module.</span>
+    <span class="c1">// Names &#39;a&#39;, &#39;f&#39;, &#39;g&#39; are defined for port connections.</span>
+    <span class="c1">// Can use named port connections.</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">same_input</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">);</span>
+    <span class="c1">// This is legal. The inputs are tied together.</span>
+<span class="k">input</span> <span class="n">a</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="highlight-verilog notranslate"><div class="highlight"><pre><span></span><span class="k">module</span> <span class="n">mixed_direction</span> <span class="p">(.</span><span class="n">p</span><span class="p">({</span><span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">}));</span>
+    <span class="c1">// p contains both input and output directions.</span>
+<span class="k">input</span> <span class="n">a</span><span class="p">;</span>
+<span class="k">output</span> <span class="n">e</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ansi-style-everything-together">
+<h3>ANSI style (everything together)<a class="headerlink" href="#ansi-style-everything-together" title="Permalink to this headline">¶</a></h3>
+<p>…</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sphinx-verilog-domain</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="port.html">verilog:port</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">verilog:parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">verilog:module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nesting.html">Nesting and refs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nesting2.html">Cross-document refs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Various.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/notes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

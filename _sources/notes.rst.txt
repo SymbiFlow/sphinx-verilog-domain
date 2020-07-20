@@ -1,0 +1,86 @@
+Notes
+*****
+
+Modules
+===============
+
+Page 696
+
+Non-ANSI style (separate port spec)
+-----------------------------------
+
+Simplified syntax
+^^^^^^^^^^^^^^^^^
+
+::
+
+    module_nonansi_header ::=
+            { attribute_instance } module_keyword [ lifetime ] module_identifier
+            { package_import_declaration } [ parameter_port_list ] list_of_ports ;
+    list_of_ports ::= "(" port { "," port } ")"
+    port ::=
+            [ port_expression ]
+            | "." port_identifier "(" [ port_expression ] ")"
+    port_expression ::=
+            port_reference
+            | "{" port_reference { "," port_reference } "}"
+    port_reference ::=
+            port_identifier constant_select
+
+Examples
+^^^^^^^^
+
+FIXME: Taken from spec. Do not use in public repo.
+
+.. code-block:: verilog
+
+    module test(a,b,c,d,e,f,g,h);
+
+.. code-block:: verilog
+
+    module complex_ports ( {c,d}, .e(f) );
+        // Nets {c,d} receive the first port bits.
+        // Name 'f' is declared inside the module.
+        // Name 'e' is defined outside the module.
+        // Cannot use named port connections of first port.
+
+.. code-block:: verilog
+
+    module split_ports (a[7:4], a[3:0]);
+        // First port is upper 4 bits of 'a'.
+        // Second port is lower 4 bits of 'a'.
+        // Cannot use named port connections because
+        // of part-select port 'a'.
+
+.. code-block:: verilog
+
+    module same_port (.a(i), .b(i));
+        // Name 'i' is declared inside the module as an inout port.
+        // Names 'a' and 'b' are defined for port connections.
+
+.. code-block:: verilog
+
+    module renamed_concat (.a({b,c}), f, .g(h[1]));
+        // Names 'b', 'c', 'f', 'h' are defined inside the module.
+        // Names 'a', 'f', 'g' are defined for port connections.
+        // Can use named port connections.
+
+.. code-block:: verilog
+
+    module same_input (a,a);
+        // This is legal. The inputs are tied together.
+    input a;
+
+.. code-block:: verilog
+
+    module mixed_direction (.p({a, e}));
+        // p contains both input and output directions.
+    input a;
+    output e;
+
+
+ANSI style (everything together)
+--------------------------------
+
+...
+

@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>verilog:module &#8212; sphinx-verilog-domain 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="http://livejs.com/live.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Nesting and refs" href="nesting.html" />
+    <link rel="prev" title="verilog:parameter" href="parameter.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="verilog-module">
+<h1>verilog:module<a class="headerlink" href="#verilog-module" title="Permalink to this headline">¶</a></h1>
+<dl class="verilog module">
+<dt id="verilog-module-test1">
+<span class="p">(*</span> <span>attr = 2 * 2</span> <span class="p">*)</span> module <code class="sig-name descname">test1</code><span class="p">(</span><code class="sig-prename descclassname">a</code><span class="p">,</span> <code class="sig-prename descclassname">b</code><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">,</span> <code class="sig-prename descclassname">d</code><span class="p">,</span> <code class="sig-prename descclassname">e</code><span class="p">,</span> <code class="sig-prename descclassname">f</code><span class="p">,</span> <code class="sig-prename descclassname">g</code><span class="p">,</span> <code class="sig-prename descclassname">h</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-test1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-test2">
+module <code class="sig-name descname">test2</code><span class="p">(</span><code class="sig-prename descclassname">a</code><span class="p">,</span> <code class="sig-prename descclassname">b</code><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">,</span> <code class="sig-prename descclassname">d</code><span class="p">,</span> <code class="sig-prename descclassname">e</code><span class="p">,</span> <code class="sig-prename descclassname">f</code><span class="p">,</span> <code class="sig-prename descclassname">g</code><span class="p">,</span> <code class="sig-prename descclassname">h</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-test2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-complex-ports">
+module <code class="sig-name descname">complex_ports</code><span class="p">(</span><span class="p">{</span><code class="sig-prename descclassname">c</code><span class="p">,</span> <code class="sig-prename descclassname">d</code><span class="p">}</span><span class="p">,</span> <span>.</span><code class="sig-prename descclassname">e</code><span class="p">(</span><code class="sig-prename descclassname">f</code><span class="p">)</span><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-complex-ports" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-split-ports">
+module <code class="sig-name descname">split_ports</code><span class="p">(</span><code class="sig-prename descclassname">a</code><span class="p">[</span><span>7:4</span><span class="p">]</span><span class="p">,</span> <code class="sig-prename descclassname">a</code><span class="p">[</span><span>3:0</span><span class="p">]</span><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-split-ports" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-same-port">
+module <code class="sig-name descname">same_port</code><span class="p">(</span><span>.</span><code class="sig-prename descclassname">a</code><span class="p">(</span><code class="sig-prename descclassname">i</code><span class="p">)</span><span class="p">,</span> <span>.</span><code class="sig-prename descclassname">b</code><span class="p">(</span><code class="sig-prename descclassname">i</code><span class="p">)</span><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-same-port" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-renamed-concat">
+module <code class="sig-name descname">renamed_concat</code><span class="p">(</span><span>.</span><code class="sig-prename descclassname">a</code><span class="p">(</span><span class="p">{</span><code class="sig-prename descclassname">b</code><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">}</span><span class="p">)</span><span class="p">,</span> <code class="sig-prename descclassname">f</code><span class="p">,</span> <span>.</span><code class="sig-prename descclassname">g</code><span class="p">(</span><code class="sig-prename descclassname">h</code><span class="p">[</span><span>1</span><span class="p">]</span><span class="p">)</span><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-renamed-concat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-same-input">
+module <code class="sig-name descname">same_input</code><span class="p">(</span><code class="sig-prename descclassname">a</code><span class="p">,</span> <code class="sig-prename descclassname">a</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-same-input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="verilog module">
+<dt id="verilog-module-mixed-direction">
+module <code class="sig-name descname">mixed_direction</code><span class="p">(</span><span>.</span><code class="sig-prename descclassname">p</code><span class="p">(</span><span class="p">{</span><code class="sig-prename descclassname">a</code><span class="p">,</span> <code class="sig-prename descclassname">e</code><span class="p">}</span><span class="p">)</span><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-mixed-direction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">sphinx-verilog-domain</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="port.html">verilog:port</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">verilog:parameter</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">verilog:module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nesting.html">Nesting and refs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nesting2.html">Cross-document refs</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="parameter.html" title="previous chapter">verilog:parameter</a></li>
+      <li>Next: <a href="nesting.html" title="next chapter">Nesting and refs</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Various.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/module.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
