@@ -1,0 +1,317 @@
+// NOTE: Line breaks escaped with "\" and leading whitespace in the next line are removed before passing the grammar to Lark
+
+// Common
+%ignore _WS
+_WS: /[ \t\f\r\n]+/
+
+// Reasons for RE here:
+// * word boundary detection is necessary
+// * it fails with lark's "|": https://github.com/lark-parser/lark/issues/550#issuecomment-607812873
+KW_OTHER: /\b(accept_on\
+             |default\
+             |forkjoin\
+             |alias\
+             |defparam\
+             |function\
+             |always\
+             |design\
+             |generate\
+             |always_comb\
+             |disable\
+             |genvar\
+             |always_ff\
+             |dist\
+             |global\
+             |always_latch\
+             |do\
+             |highz0\
+             |and\
+             |edge\
+             |highz1\
+             |assert\
+             |else\
+             |if\
+             |assign\
+             |end\
+             |iff\
+             |assume\
+             |endcase\
+             |ifnone\
+             |automatic\
+             |endchecker\
+             |ignore_bins\
+             |before\
+             |endclass\
+             |illegal_bins\
+             |begin\
+             |endclocking\
+             |implements\
+             |bind\
+             |endconfig\
+             |implies\
+             |bins\
+             |endfunction\
+             |import\
+             |binsof\
+             |endgenerate\
+             |incdir\
+             |bit\
+             |endgroup\
+             |include\
+             |break\
+             |endinterface\
+             |initial\
+             |buf\
+             |endmodule\
+             |inout\
+             |bufif0\
+             |endpackage\
+             |input\
+             |bufif1\
+             |endprimitive\
+             |inside\
+             |byte\
+             |endprogram\
+             |instance\
+             |case\
+             |endproperty\
+             |int\
+             |casex\
+             |endspecify\
+             |integer\
+             |casez\
+             |endsequence\
+             |interconnect\
+             |cell\
+             |endtable\
+             |interface\
+             |chandle\
+             |endtask\
+             |intersect\
+             |checker\
+             |enum\
+             |join\
+             |class\
+             |event\
+             |join_any\
+             |clocking\
+             |eventually\
+             |join_none\
+             |cmos\
+             |expect\
+             |large\
+             |config\
+             |export\
+             |let\
+             |const\
+             |extends\
+             |liblist\
+             |constraint\
+             |extern\
+             |library\
+             |context\
+             |final\
+             |local\
+             |continue\
+             |first_match\
+             |cover\
+             |for\
+             |logic\
+             |covergroup\
+             |force\
+             |longint\
+             |coverpoint\
+             |foreach\
+             |macromodule\
+             |cross\
+             |forever\
+             |matches\
+             |deassign\
+             |fork\
+             |medium\
+             |modport\
+             |reject_on\
+             |time\
+             |release\
+             |timeprecision\
+             |nand\
+             |repeat\
+             |timeunit\
+             |negedge\
+             |restrict\
+             |tran\
+             |nettype\
+             |return\
+             |tranif0\
+             |new\
+             |rnmos\
+             |tranif1\
+             |nexttime\
+             |rpmos\
+             |tri\
+             |nmos\
+             |rtran\
+             |tri0\
+             |nor\
+             |rtranif0\
+             |tri1\
+             |noshowcancelled\
+             |rtranif1\
+             |triand\
+             |not\
+             |s_always\
+             |trior\
+             |notif0\
+             |s_eventually\
+             |trireg\
+             |notif1\
+             |s_nexttime\
+             |type\
+             |null\
+             |s_until\
+             |typedef\
+             |or\
+             |s_until_with\
+             |union\
+             |output\
+             |scalared\
+             |unique\
+             |package\
+             |sequence\
+             |unique0\
+             |packed\
+             |shortint\
+             |unsigned\
+             |shortreal\
+             |until\
+             |pmos\
+             |showcancelled\
+             |until_with\
+             |posedge\
+             |signed\
+             |untyped\
+             |primitive\
+             |small\
+             |use\
+             |priority\
+             |soft\
+             |uwire\
+             |program\
+             |solve\
+             |var\
+             |property\
+             |specify\
+             |vectored\
+             |protected\
+             |virtual\
+             |pull0\
+             |static\
+             |void\
+             |pull1\
+             |string\
+             |wait\
+             |pulldown\
+             |strong\
+             |wait_order\
+             |pullup\
+             |strong0\
+             |wand\
+             |pulsestyle_ondetect\
+             |strong1\
+             |weak\
+             |pulsestyle_onevent\
+             |struct\
+             |weak0\
+             |pure\
+             |super\
+             |weak1\
+             |rand\
+             |supply0\
+             |while\
+             |randc\
+             |supply1\
+             |wildcard\
+             |randcase\
+             |sync_accept_on\
+             |wire\
+             |randsequence\
+             |sync_reject_on\
+             |with\
+             |rcmos\
+             |table\
+             |within\
+             |real\
+             |tagged\
+             |wor\
+             |realtime\
+             |task\
+             |xnor\
+             |ref\
+             |this\
+             |xor\
+             |reg\
+             |throughout\
+             )\b/
+
+KW_MODULE: /\bmodule\b/
+KW_PARAM: /\b(localparam|parameter|specparam)\b/
+
+ID.-1: _SIMPLE_IDENTIFIER | _ESCAPED_IDENTIFIER
+_SIMPLE_IDENTIFIER: /[a-zA-Z_][a-zA-Z0-9_$]*/
+_ESCAPED_IDENTIFIER: "\\" /[\x21-\x7E]+/ " "
+
+SYM_SEMICOLON: ";"
+SYM_COMMA: ","
+
+OP_DOT: "."
+OP_EQUAL: "="
+
+// Attributes
+
+SYM_ATTR_PAREN_L: "(*"
+SYM_ATTR_PAREN_R: "*)"
+TEXT_EXPR_ATTR.-2: /([^*]|\*+[^)*])*[^* \t\f\r\n]/
+expr_attr: SYM_ATTR_PAREN_L TEXT_EXPR_ATTR? SYM_ATTR_PAREN_R
+
+// Expressions
+
+SYM_PAREN_L: "("
+SYM_PAREN_R: ")"
+SYM_BRACKET_L: "["
+SYM_BRACKET_R: "]"
+SYM_BRACE_L: "{"
+SYM_BRACE_R: "}"
+
+expr_paren: SYM_PAREN_L (expr+ (SYM_COMMA expr+)*)? SYM_PAREN_R
+expr_bracket: SYM_BRACKET_L (expr+ (SYM_COMMA expr+)*)? SYM_BRACKET_R
+expr_brace: SYM_BRACE_L (expr+ (SYM_COMMA expr+)*)? SYM_BRACE_R
+TEXT_EXPR.-2: /[^][(){};,]*[^][(){};, \t\f\r\n]/
+?expr: (expr_attr|expr_paren|expr_bracket|expr_brace|TEXT_EXPR)
+
+// Ports
+
+port: port_decl SYM_SEMICOLON?
+
+id_port.-1: ID
+port_ref: id_port expr_bracket*
+port_decl: (expr_attr)? KW_OTHER+ expr_bracket* port_ref (SYM_COMMA port_ref)*
+
+// Parameters
+
+parameter: parameter_decl SYM_SEMICOLON?
+
+id_parameter.-1: ID
+parameter_assignment: id_parameter expr_bracket* (OP_EQUAL expr+)?
+parameter_decl: KW_PARAM KW_OTHER* expr_bracket* parameter_assignment (SYM_COMMA parameter_assignment)*
+
+// Modules
+
+module: non_ansi_module_decl SYM_SEMICOLON?
+
+id_module.-1: ID
+id_ext_port.-1: ID
+port_expr: port_ref
+         | SYM_BRACE_L port_ref (SYM_COMMA port_ref)* SYM_BRACE_R
+non_ansi_module_port: port_expr
+                    | OP_DOT id_ext_port SYM_PAREN_L port_expr? SYM_PAREN_R
+non_ansi_module_decl: (expr_attr)? KW_MODULE id_module SYM_PAREN_L non_ansi_module_port (SYM_COMMA non_ansi_module_port)* SYM_PAREN_R
