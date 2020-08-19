@@ -3,11 +3,13 @@ Verilog Domain test
 
 .. toctree::
 
-    port
-    parameter
-    module
-    nesting
-    nesting2
+   port
+   parameter
+   module
+   nesting
+   nesting2
+
+   symbolator
 
 ----
 
