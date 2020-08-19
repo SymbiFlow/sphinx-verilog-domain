@@ -325,6 +325,7 @@ class BaseVerilogDirective(ObjectDescription):
             obj.linktarget = make_unique_linktarget(refname, obj, self.state.document.ids)
             obj.docname = self.env.docname
             obj.lineno = self.lineno
+            obj.objtype = self.objtype
 
             signode["ids"].append(obj.linktarget)
             self.state.document.note_explicit_target(signode)
@@ -631,7 +632,8 @@ class VerilogDomain(Domain):
                         if candidate.name == identifier:
                             obj = candidate
                 if obj and not obj.is_placeholder():
-                    return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, obj.name)
+                    tooltip = f"{obj.objtype} {obj.name}" if obj.objtype else f"{obj.name}"
+                    return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, tooltip)
             return None
 
         # Find leading identifier's object
@@ -656,7 +658,10 @@ class VerilogDomain(Domain):
         if not obj.linktarget:
             return None
 
-        return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, obj.name)
+        # Skip "$root" prefix
+        qualified_name_without_root = VerilogQualifiedIdentifier(obj.qualified_name[1:])
+        tooltip = f"{obj.objtype} {qualified_name_without_root}" if obj.objtype else f"{qualified_name_without_root}"
+        return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, tooltip)
 
 def setup(app):
     app.add_config_value('verilog_domain_debug', [], '')
