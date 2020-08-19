@@ -16,45 +16,44 @@ from os import path
 from sphinx.util import logging
 log = logging.getLogger(__name__)
 
-termfmt_re = re.compile(r"\(\x1b\[([0-9,;]+)\]|\033\)")
-def termfmt(s):
-    sl = list(termfmt_re.split(s))
-    r = sl.pop(0)
-    stack = []
-    for attr,text in zip(sl[0::2], sl[1::2]):
-        if attr is not None:
-            stack.append(attr)
-            r += "\033[" + attr + "m" + text
-        else:
-            if len(stack) > 0:
-                del stack[-1]
-            r += "\033[" + ";".join(["0"] + stack) + "m" + text
-    return r
+_csi_sequences = {
+    "B": "\033[1m",  # bold/bright
+    "D": "\033[2m",  # dim
+    "n": "\033[22m", # normal intensity
+    "I": "\033[3m",  # italic on
+    "i": "\033[23m", # italic off
+    "R": "\033[7m",  # reverse on
+    "r": "\033[27m", # reverse off
+}
 
 def debug(name, msg, *args, **kwargs):
-    log.info(termfmt(f"(\033[34](\033[7]{name}\033) {msg}\033)"), *args, **kwargs)
+    log.info("\033[94m{B}{R}{}{r}{n} {}\033[0m".format(name, msg, **_csi_sequences),
+            *args, **kwargs)
 
-
-_simple_identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_$]*")
-_any_identifier_re = re.compile(_simple_identifier_re.pattern + r"|\\[\x21-\x7E]+ " + r"|\$root")
-
-def _normalize_identifier(identifier: str):
-    assert(identifier and _any_identifier_re.fullmatch(identifier))
-    if identifier[-1] == " " and identifier[0] == "\\" and _simple_identifier_re.fullmatch(identifier[1:-1]):
-        return identifier[1:-1]
-    else:
-        return identifier
-
-def _split_qualified_identifier(qualified_identifier: str) -> list:
-    # In some cases (e.g. in :ref: argument) space required by escaped identifiers can't be placed as a string's last character.
-    # Add one just in case. It will be ignored if not needed.
-    return _any_identifier_re.findall(qualified_identifier + " ")
-
-def _make_qualified_identifier(identifiers: list) -> str:
-    assert(all([_any_identifier_re.fullmatch(id) for id in identifiers]))
-    return ".".join(identifiers)
+def _format_location(srcdoc, dstdoc, line):
+    return f"on line {line}" if srcdoc == dstdoc else f"in '{dstdoc}', on line {line}"
 
 #-------------------------------------------------------------------------------
+
+def visualize_tree(root, children_iter_func, format_func):
+    lines = []
+    OUTER_PREFIXES = ("├─ ", "└─ ")
+    INNER_PREFIXES = ("│  ", "   ")
+    def process_children(node, prefix=""):
+        children, count = children_iter_func(node)
+        for i, child in enumerate(children):
+           lines.append("\033[2m{}\033[22m{}".format(prefix + OUTER_PREFIXES[0 if i<count-1 else 1], str(format_func(child))))
+           process_children(child, prefix + INNER_PREFIXES[0 if i<count-1 else 1])
+
+    lines.append(format_func(root))
+    process_children(root)
+
+    return "\n".join(lines)
+
+#-------------------------------------------------------------------------------
+
+escaped_line_break_re = re.compile(r"\\\n\s*")
+strip_backslash_re = re.compile(r"\\(.)")
 
 class VerilogParser(lark.Lark):
     def __init__(self):
@@ -63,8 +62,7 @@ class VerilogParser(lark.Lark):
             grammar = f.read()
 
         # Remove escaped line breaks and leading whitespace in the next line
-        escaped_line_end_re = re.compile(r"\\\n\s*")
-        grammar = escaped_line_end_re.sub("", grammar)
+        grammar = escaped_line_break_re.sub("", grammar)
 
         super().__init__(grammar,
                 parser="lalr",
@@ -79,8 +77,7 @@ class BaseVerilogDirective(ObjectDescription):
     parser = VerilogParser()
 
     def __init__(self, *args, **kwargs):
-        self.decl_names = []
-        self.placeholders = []
+        self.all_names = set()
         super().__init__(*args, **kwargs)
 
     #------------------------
@@ -89,7 +86,15 @@ class BaseVerilogDirective(ObjectDescription):
 
     def process_tree(self, tree):
         self._prev_token = None
-        return list(self._process_nodes(tree))
+        nodes = []
+        names = []
+        placeholders = []
+        for typ, item in self._process_nodes(tree):
+            if typ == "name": names.append(item)
+            elif typ == "node": nodes.append(item)
+            elif typ == "placeholder": placeholders.append(item)
+            else: assert False
+        return (nodes, names, placeholders)
 
     def _process_nodes(self, item, rules=[]):
         if isinstance(item, lark.Tree):
@@ -97,7 +102,7 @@ class BaseVerilogDirective(ObjectDescription):
                 yield from self._process_nodes(i, [item.data] + rules)
         elif isinstance(item, lark.Token):
             if self.should_insert_space(item):
-                yield nodes.Text(" ")
+                yield ("node", nodes.Text(" "))
             yield from self.process_token(item, rules)
             self._prev_token = item
 
@@ -106,18 +111,18 @@ class BaseVerilogDirective(ObjectDescription):
         prev_parts = self._prev_token.type.split("_") if self._prev_token else [""]
 
         if type_parts[0] == "KW":
-            yield addnodes.desc_type(text=token.value)
+            yield ("node", addnodes.desc_type(text=token.value))
         elif type_parts[0] == "SYM":
-            yield addnodes.desc_sig_punctuation(text=token.value)
+            yield ("node", addnodes.desc_sig_punctuation(text=token.value))
         elif type_parts[0] == "ID":
             if "id_ext_port" in rules:
-                yield addnodes.desc_addname(text=token.value)
+                yield ("node", addnodes.desc_addname(text=token.value))
             else:
-                yield addnodes.desc_name(text=token.value)
+                yield ("node", addnodes.desc_name(text=token.value))
         elif type_parts[0] == "TEXT":
-            yield addnodes.desc_sig_element(text=token.value.strip())
+            yield ("node", addnodes.desc_sig_element(text=token.value.strip()))
         else:
-            yield addnodes.desc_sig_element(text=token.value)
+            yield ("node", addnodes.desc_sig_element(text=token.value))
 
     def should_insert_space(self, token):
         c = token.type.split("_")
@@ -152,14 +157,8 @@ class BaseVerilogDirective(ObjectDescription):
                 f"  \033[94m{repr(sig)}\033[0m\033[0m",
                 *(list(print_tree(tree, '  '))),
                 "",
-                f"  decl names: {self.decl_names}",
-                f"  placeholders: {[p[0] for p in self.placeholders]}",
             ]
             log.info("\n".join(msg), location=self._loc())
-
-    @property
-    def _verilog_scope(self) -> list:
-        return self.env.temp_data.setdefault("verilog:scope", [])
 
     def _debug_enabled(self, cat):
         global_debug = cat in self.env.app.config.verilog_domain_debug
@@ -175,8 +174,31 @@ class BaseVerilogDirective(ObjectDescription):
 
     option_spec = dict(ObjectDescription.option_spec,
         debug = directives.flag,
-        alias = directives.unchanged,
+        refname = directives.unchanged,
     )
+
+    @property
+    def current_object(self):
+        domain = self.env.get_domain("verilog")
+        return self.env.temp_data.setdefault("verilog:current_object", domain.objects)
+
+    @current_object.setter
+    def current_object(self, value):
+        self.env.temp_data["verilog:current_object"] = value
+
+    def push_namespace(self, identifier):
+        namespace = self.current_object.setdefault(identifier, VerilogDomainObject(identifier))
+        self.current_object = namespace
+
+    def run(self):
+        try:
+            self.refname = VerilogIdentifier(self.options.get("refname", "").strip())
+        except:
+            self.refname = None
+        self.parent_object = self.current_object
+        nodes = super().run()
+        self.current_object = self.parent_object
+        return nodes
 
     def transform_content(self, contentnode):
         if not self._debug_enabled("add_debug_content"):
@@ -187,49 +209,52 @@ class BaseVerilogDirective(ObjectDescription):
 
         src_line = nodes.line(text="Src: ")
         dbg_info += src_line
-        lb = nodes.literal(text='\n'.join(self.arguments))
+        lb = nodes.literal(text='\n'.join(self.get_signatures()))
         lb["language"] = "text"
         src_line += lb
 
-        if self.decl_names:
+        def list_join(joiner, values):
+            new_values=[joiner] * (2*len(values) - 1)
+            new_values[0::2] = values
+            return new_values
+
+
+        names = []
+        placeholders = []
+        for n,p in self.names:
+            names.extend(n)
+            placeholders.extend(p)
+
+        if names:
             decls = nodes.line(text="Declares: ")
             dbg_info += decls
-            decls += [nodes.literal(text=n) for n in self.decl_names]
+            if not self.refname:
+                decls += list_join(nodes.Text(","), [nodes.literal(text=n.strip()) for n in names])
+            else:
+                decls += nodes.literal(text=names[0].strip())
+                decls += nodes.Text(" as ")
+                decls += nodes.literal(text=self.refname)
 
-            scope = self._verilog_scope
-            if self.creates_scope and len(self.decl_names) == 1:
-                # ignore this directive's scope
-                scope = scope[0:-1]
-            if len(scope) > 0:
+            namespace = self.parent_object.qualified_name
+            if len(namespace) > 0:
                 decls += nodes.Text(" in ")
-                decls += nodes.literal(text=".".join(scope))
-        if self.placeholders:
+                decls += nodes.literal(text=".".join(namespace))
+        if placeholders:
             refs = nodes.line(text="Placeholders: ")
             dbg_info += refs
-            refs += [nodes.literal(text=n[0]) for n in self.placeholders]
+            refs += list_join(nodes.Text(","), [nodes.literal(text=n.strip()) for n in placeholders])
 
-    def before_content(self) -> None:
+    def get_signatures(self):
         if self.creates_scope:
-            # Create Verilog scope for declarations inside this node
-            if len(self.decl_names) == 1:
-                scope = self._verilog_scope
-                scope.append(self.decl_names[0])
-            else:
-                # A class which allows multiple names probably should set self.creates_scope to False
-                log.warning(f"{self.name}: {len(self.decl_names)} names declared. Verilog scope is not created.", location=self._loc())
-
-
-    def after_content(self) -> None:
-        if self.creates_scope and len(self.decl_names) == 1:
-            # Leave Verilog scope created in before_content()
-            scope = self._verilog_scope
-            assert(len(scope) > 0)
-            assert(scope[-1] == self.decl_names[0])
-            del scope[-1]
+            # Only one declaration per directive
+            signature = escaped_line_break_re.sub('', self.arguments[0])
+            if self.config.strip_signature_backslash:
+                signature = strip_backslash_re.sub(r'\1', signature)
+            return [signature]
+        else:
+            return super().get_signatures()
 
     def handle_signature(self, sig, signode):
-        sig = sig.strip()
-
         nodes = []
         try:
             tree = self.parser.parse(text=sig, start=self.start_rule)
@@ -240,69 +265,79 @@ class BaseVerilogDirective(ObjectDescription):
                 "Expected one of: " + ", ".join(e.expected) + "\n"
             ]
             log.error("\n\t".join(msg), location=self._loc())
+            raise ValueError()
         except Exception as e:
             log.error(f"{self.name}: {e}", location=self._loc())
-        else:
-            nodes = self.process_tree(tree)
-            self._dbg_print_tree(sig, tree)
+            raise ValueError()
 
-        if nodes:
-            signode += nodes
-        else:
-            signode += addnodes.desc_sig_element(text=sig)
+        nodes, names, placeholders = self.process_tree(tree)
+        self._dbg_print_tree(sig, tree)
+        signode += nodes
+        return (names, placeholders)
 
-        return self.decl_names
-
-    def add_target_and_index(self, names, sig, signode):
+    def add_target_and_index(self, names_placeholders, sig, signode):
+        names, placeholders = names_placeholders
         if not names:
-            log.warning(f"{self.name}: `{sig}`: no declared names found", location=self._loc())
+            log.warning("{caller}: no name declarations found in signature: {sig}".format(
+                caller = self.name,
+                sig = sig,
+            ), location=self._loc())
             return
 
-        domain = self.env.get_domain("verilog")
-        parent = domain.data["objects"]
-        for ancestor_name in self._verilog_scope:
-            parent = parent[ancestor_name]
+        def make_unique_linktarget(refname, obj, used_ids):
+            if obj.parent:
+                if obj.parent.linktarget:
+                    parent_linktarget = obj.parent.linktarget
+                else:
+                    parent_linktarget = make_unique_linktarget(obj.name.normalize(), obj.parent, used_ids)
+            else:
+                assert obj.name == VerilogIdentifier.ROOT_NAME, "Object must be added to domain's object tree before calling this function."
+                return "verilog"
+
+            preferred_linktarget = parent_linktarget + "-" + refname
+            linktarget = nodes.make_id(preferred_linktarget)
+            i = 1
+            while linktarget in used_ids:
+                linktarget = nodes.make_id(preferred_linktarget + "-" + str(i))
+                i += 1
+            return linktarget
 
         for name in names:
-            # Create target
-            id_parts = ["verilog", self.objtype] + self._verilog_scope + [name]
-            node_id = nodes.make_id("-".join(id_parts))
-            i = 1
-            while node_id in self.state.document.ids:
-                node_id = nodes.make_id("-".join(id_parts + [str(i)]))
-                i += 1
-            signode["ids"].append(node_id)
+            if name in self.all_names:
+                continue
+            self.all_names.add(name)
+
+            refname = str(self.refname or name.normalize())
+
+            if refname in self.parent_object:
+                obj = self.parent_object[refname]
+                if not (obj.is_only_namespace() or obj.is_placeholder()):
+                    log.warning("{caller}: name already declared ({loc}): {name}".format(
+                        caller = self.name,
+                        name = obj.qualified_name,
+                        loc = _format_location(self.env.docname, obj.docname, obj.lineno)
+                    ), location=self._loc())
+                    return
+            else:
+                obj = self.parent_object[refname] = VerilogDomainObject()
+
+            obj.name = name
+            obj.linktarget = make_unique_linktarget(refname, obj, self.state.document.ids)
+            obj.docname = self.env.docname
+            obj.lineno = self.lineno
+
+            signode["ids"].append(obj.linktarget)
             self.state.document.note_explicit_target(signode)
+            # Refname allows for only one name per signature
+            if self.refname:
+                break
 
-            # Register the declaration in domain objects tree
-            if name not in parent or parent[name].is_placeholder():
-                parent[name] = _DomainObject(node_id=node_id, objtype=self.objtype, docname=self.env.docname, lineno=self.lineno)
-            else:
-                if "alias" not in self.options:
-                    orig = parent[name]
-                    log.warning(f"{self.name}: `{name}` (in scope `{parent.qualified_name}`) already declared in line {orig.lineno}.", location=self._loc())
-
-        if not names:
-            return
-
-        # Register signature alias if provided
-        if "alias" in self.options:
-            alias = self.options["alias"].strip()
-            if not alias or not _simple_identifier_re.fullmatch(alias):
-                log.warning(f"{self.name}: alias `{alias}` is not a valid identifier.", location=self._loc())
-            elif alias not in parent:
-                parent[alias] = parent[names[0]]
-            else:
-                orig = parent[alias]
-                log.warning(f"{self.name}: `{name}` (in scope `{parent.qualified_name}`) already declared in line {orig.lineno}.", location=self._loc())
-
-        # Register declaration placeholders in domain object tree
-        node_id = signode["ids"][0]
-        parent = parent[names[0]]
-        for name,objtype in self.placeholders:
-            parent[name] = _DomainObject(node_id=node_id, objtype=objtype, docname=self.env.docname, lineno=self.lineno)
-            if self._debug_enabled("print_add_target"):
-                debug("add_target", f"Add placeholder: (\033[1]{parent[name]}\033)")
+        for placeholder in placeholders:
+            if placeholder not in self.current_object:
+                self.current_object[placeholder] = VerilogDomainObject(name=placeholder,
+                        linktarget=self.current_object.linktarget,
+                        docname=self.current_object.docname,
+                        lineno=self.current_object.lineno)
 
 #-------------------------------------------------------------------------------
 
@@ -313,7 +348,7 @@ class PortDirective(BaseVerilogDirective):
     def process_token(self, token, rules=[]):
         yield from super().process_token(token, rules)
         if token.type == "ID" and "id_port" in rules:
-            self.decl_names.append(_normalize_identifier(token.value))
+            yield ("name", VerilogIdentifier(token.value))
 
 
 class ParameterDirective(BaseVerilogDirective):
@@ -323,7 +358,7 @@ class ParameterDirective(BaseVerilogDirective):
     def process_token(self, token, rules=[]):
         yield from super().process_token(token, rules)
         if token.type == "ID" and "id_parameter" in rules:
-            self.decl_names.append(_normalize_identifier(token.value))
+            yield ("name", VerilogIdentifier(token.value))
 
 
 class ModuleDirective(BaseVerilogDirective):
@@ -331,157 +366,222 @@ class ModuleDirective(BaseVerilogDirective):
 
     def process_token(self, token, rules=[]):
         if token.type == "ID" and "id_port" in rules:
-            self.placeholders.append((_normalize_identifier(token.value), "port"))
-            ref = addnodes.pending_xref("", refdomain="verilog", reftype="ref", refwarn=False, reftarget=token.value)
-            ref["verilog:scope"] = self._verilog_scope + [self.decl_names[0]]
-            ref["verilog:ignore_placeholders"] = True
+            name = VerilogIdentifier(token.value)
+            yield ("placeholder", name)
+
+            qualified_name = self.current_object.qualified_name + name
+
+            ref = addnodes.pending_xref("", refdomain="verilog", reftype="childref", refwarn=False, reftarget=str(qualified_name))
+            ref.line = self.lineno
+            ref["verilog:parent_object"] = self.current_object
+
             port_node = addnodes.desc_addname(text=token.value)
             ref += port_node
-            yield ref
-            return
+            yield ("node", ref)
         else:
-            if token.type == "ID" and "id_module" in rules:
-                self.decl_names.append(_normalize_identifier(token.value))
             yield from super().process_token(token, rules)
+            if token.type == "ID" and "id_module" in rules:
+                name = VerilogIdentifier(token.value)
+                self.push_namespace(self.refname or name)
+                yield ("name", name)
 
 
 class VerilogXRefRole(XRefRole):
     def process_link(self, env, refnode, has_explicit_title: bool, title: str, target: str):
-        env_scope = env.temp_data.get("verilog:scope", [])
-        refnode["verilog:scope"] = env_scope[:]
-        refnode["verilog:ignore_placeholders"] = False
+        refnode["verilog:parent_object"] = env.temp_data.get("verilog:current_object")
         return super().process_link(env, refnode, has_explicit_title, title, target)
 
+#-------------------------------------------------------------------------------
 
-class _DomainObject:
-    def __init__(self, name=None, node_id=None, objtype=None, docname=None, lineno=None, parent=None):
-        # Verilog identifier/object tree key
-        self._name = name
-        # Target ID
-        self.node_id = node_id
-        # Type ("module", "port", ...)
-        self.objtype = objtype
-        # Document containing the object
+class VerilogIdentifier(str):
+    _simple_identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_$]*")
+    _any_identifier_re = re.compile(_simple_identifier_re.pattern + r"|\\[\x21-\x7E]+(?: |$)" + r"|\$root")
+
+    ROOT_NAME = "$root"
+
+    def __new__(cls, value):
+        if isinstance(value, cls):
+            return value
+        if not isinstance(value, str):
+            raise TypeError(f"{cls.__name__}() argument must be a string or {cls.__name__}, not {repr(type(value).__name__)}")
+        if not VerilogIdentifier._any_identifier_re.fullmatch(str(value)):
+            raise ValueError(f"Invalid identifier for {cls.__name__}(): {repr(value)}")
+        return super().__new__(cls, value)
+
+    def is_escaped(self):
+        return self[-1] == " " and self[0] == "\\"
+
+    def normalize(self):
+        """Returns unescaped name if the identifier is escaped and can be represented as a simple identifier.
+        Otherwise returns name without changes.
+        """
+        if self.is_escaped() and VerilogIdentifier._simple_identifier_re.fullmatch(self[1:-1]):
+            return str(self[1:-1])
+        else:
+            return str(self)
+
+    def __eq__(self, other):
+        return str(self) == str(other) or self.normalize() == VerilogIdentifier(other).normalize()
+
+    def __hash__(self):
+        return hash(self.normalize())
+
+    def __add__(self, other):
+        if isinstance(other, str):
+            return VerilogQualifiedIdentifier((self, other))
+        raise NotImplemented()
+
+    def __radd__(self, other):
+        if isinstance(other, str):
+            return VerilogQualifiedIdentifier((other, self))
+        raise NotImplemented()
+
+
+class VerilogQualifiedIdentifier(tuple):
+    def __new__(cls, values):
+        # To prevent common error, raise error when str (or VerilogIdentifier) is passed directly as an argument.
+        if isinstance(values, str):
+            raise TypeError(f"{cls.__name__}() argument must be any iterable except string. Try wrapping it in a list.")
+        return super().__new__(cls, [VerilogIdentifier(value) for value in values])
+
+    @classmethod
+    def fromstring(cls, s):
+        if not isinstance(s, str):
+            raise TypeError(f"{cls.__name__}() argument must be a string, not {repr(type(s).__name__)}")
+        return cls(VerilogIdentifier._any_identifier_re.findall(s))
+
+    def __str__(self): return "::".join(self)
+
+    def normalize(self):
+        return VerilogQualifiedIdentifier([vi.normalize() for vi in self])
+
+    def __add__(self, other):
+        if isinstance(other, str):
+            return VerilogQualifiedIdentifier((*self, other))
+        elif isinstance(other, VerilogQualifiedIdentifier):
+            return VerilogQualifiedIdentifier((*self, *other))
+        raise NotImplemented()
+
+    def __radd__(self, other):
+        if isinstance(other, str):
+            return VerilogQualifiedIdentifier((other, *self))
+        raise NotImplemented()
+
+#-------------------------------------------------------------------------------
+
+class VerilogDomainObject:
+    def __init__(self, name=None, linktarget=None, docname=None, lineno=None, objtype=None):
+        # Identifier name used to refer to the object in the document's text.
+        self.name = VerilogIdentifier(name) if name else None
+        # Target used by hyperlinks
+        self.linktarget = linktarget
+        # Parent object
+        self._parent = None
+        self._children = {}
+
         self.docname = docname
-        # Line in .rst file where the object is declared
         self.lineno = lineno
 
-        self._children = {}
-        self._parent = None
-        if parent is not None:
-            assert isinstance(parent, self.__class__)
-            assert name, "Objects with a parent must have a name."
-            parent.add_children(self)
+        self.objtype = objtype
 
     @property
-    def name(self): return self._name
-
-    @property
-    def qualified_name(self):
-        return _make_qualified_identifier([a.name for a in reversed([self, *self.iter_ancestors()]) if a.name])
+    def qualified_name(self): return VerilogQualifiedIdentifier([o.name for o in self.path()])
 
     @property
     def parent(self): return self._parent
 
+    def path(self):
+        """Returns a list of all objects which create a path from the tree root to this object.
+        """
+        objects = [self]
+        while objects[-1].parent is not None:
+            objects.append(objects[-1].parent)
+        return list(reversed(objects))
+
     def is_placeholder(self):
-        return self.parent is not None and self.parent.node_id == self.node_id
+        return self.parent is not None and self.parent.linktarget == self.linktarget
 
-    def iter_ancestors(self):
-        ancestor = self.parent
-        while ancestor is not None and ancestor.name:
-            yield ancestor
-            ancestor = ancestor.parent
+    def is_only_namespace(self):
+        return self.linktarget is None
 
-    def iter_recursive(self):
-        """ Depth-first tree iteration. The node itself is not included. """
-        for child in self._children.values():
-            yield child
-            yield from child.iter_recursive()
+    def __str__(self):
+        s = str(self.qualified_name)
+        if self.linktarget:
+            s += f" #{self.linktarget}"
+        if self.docname or self.lineno:
+            s += ", in " + (self.docname or "?") + (f":{self.lineno}" if self.lineno is not None else "")
+        return s
+
+    # dict-like interface
+
+    def items(self):
+        return self._children.items()
+
+    def get(self, key, default=None):
+        return self._children.get(key, default)
+
+    def values(self):
+        return self._children.values()
+
+    def setdefault(self, k, default):
+        if k not in self:
+            self[k] = default
+        return self[k]
+
+    def __iter__(self):
+        return self._children.__iter__()
+
+    def __contains__(self, key):
+        return key in self._children
 
     def __getitem__(self, key):
         return self._children[key]
 
     def __setitem__(self, key, obj):
-        assert isinstance(obj, self.__class__)
-        assert obj != self and obj not in self.iter_ancestors()
+        assert isinstance(obj, VerilogDomainObject)
+        assert obj not in self.path()
 
         if key in self:
-            if self[key] != obj:
-                del self[key]
-            else:
-                return
-        if obj.parent == self:
-            self._children[key] = obj
-            return
+            del self[key]
 
         if obj.parent:
-            del obj.parent[obj.name]
-
-        self._children[key] = obj
+            for k,v in obj.parent.items():
+                if v == obj:
+                    del obj.parent[k]
+                    break
         obj._parent = self
-        obj._name = key
+        self._children[key] = obj
 
     def __delitem__(self, key):
-        if self.key_is_alias(key):
-            del self._children[key]
-        else:
-            item = self._children[key]
-            item._parent = None
-            self._children = {k:v for k,v in self._children.items() if v != item}
+        assert key in self._children
 
-    def key_is_alias(self, key):
-        assert(key in self._children)
-        return key == self._children[key].name
+        self._children[key]._parent = None
+        del self._children[key]
 
-    # FIXME: replace with [] and remove
-    def add_children(self, obj):
-        assert isinstance(obj, self.__class__)
-        assert obj.name
-        assert obj.name not in self._children or self._children[obj.name] == obj
-        self[obj.name] = obj
+    def visualize_tree(self):
+        def obj_children_iter(kv):
+            key, obj = kv
+            return (obj._children.items(), len(obj._children))
 
-    def __contains__(self, key):
-        return key in self._children
+        def obj_format(kv):
+            key, obj = kv
+            slist = ["{B}{name}{n}"]
+            if key and key != obj.name: slist.insert(0, "{D}[{n}{B}{key}{n}{D}]{n}")
+            if obj.linktarget: slist.append("{D}#{n}{linktarget}")
+            if obj.docname and obj.lineno: slist.append("{D}({n}{docname}{D}:{n}{lineno}{D}){n}")
+            if obj.is_only_namespace(): slist.append("{D}{I}namespace{i}{n}")
+            if obj.is_placeholder(): slist.append("{D}{I}placeholder{i}{n}")
+            return " ".join(slist).format(**_csi_sequences, key=key, name=obj.name, docname=obj.docname, lineno=obj.lineno, linktarget=obj.linktarget)
 
-    def __str__(self):
-        return self.qualified_name
+        return visualize_tree(('', self), obj_children_iter, obj_format)
 
-    def _attrs_to_string(self, attrs_list=["name", "node_id", "objtype", "docname", "lineno", "parent"], template="{k}={v}"):
-        return "(" + ", ".join([template.format(k=a, v=repr(str(getattr(self, a)))) for a in attrs_list if getattr(self, a)]) + ")"
-
-    def __repr__(self):
-        return (self.__class__.__name__
-            + self._attrs_to_string()
-            + (f"[{len(self._children)}]" if len(self._children) > 0 else ""))
-
-    def tree_repr(self):
-        result = []
-        def add_entry(obj, key=None, indent=""):
-            if not key or key == obj.name:
-                result.append(indent + "(\033[1]" + obj.name + "\033) " + obj._attrs_to_string(["node_id"], "{v}"))
-            else:
-                result.append(indent + f"(\033[1;3]{key}\033)  →  (\033[1]{obj.name}\033)")
-        def iter_recursive_with_nest_level(obj, indent=""):
-            children = list(obj._children.items())
-            for key,child in children:
-                last = key==children[-1][0]
-                cur_indent = ("├─ " if not last else "└─ ")
-                add_entry(child, key, indent + cur_indent)
-                next_indent = indent + ("│  " if not last else "   ")
-                if key == child.name:
-                    iter_recursive_with_nest_level(child, next_indent)
-
-        add_entry(self)
-        iter_recursive_with_nest_level(self)
-
-        return "\n".join(result)
-
+#-------------------------------------------------------------------------------
 
 class VerilogDomain(Domain):
     name = "verilog"
     label = "Verilog domain"
     roles = {
-        "ref": VerilogXRefRole()
+        "ref": VerilogXRefRole(warn_dangling=True)
     }
     directives = {
         "module": ModuleDirective,
@@ -489,59 +589,74 @@ class VerilogDomain(Domain):
         "port": PortDirective,
     }
     initial_data = {
-        "objects": _DomainObject(name="$root"),
+        "objects": VerilogDomainObject(name=VerilogIdentifier.ROOT_NAME),
     }
+
+    @property
+    def objects(self):
+        return self.data["objects"]
 
     def _debug_enabled(self, cat):
         return cat in self.env.app.config.verilog_domain_debug
 
     def get_objects(self):
-        for obj in self.data["objects"].iter_recursive():
-            yield obj.qualified_name, obj.qualified_name, obj.objtype, obj.docname, obj.node_id, 1
+        def iter_tree(obj):
+            yield obj
+            for child in obj.values():
+                yield from iter_tree(child)
+
+        for obj in iter_tree(self.objects):
+            if not (obj.is_only_namespace() or obj.is_placeholder()):
+                yield str(obj.qualified_name), str(obj.qualified_name), obj.objtype or "", obj.docname, obj.linktarget, 1
 
     def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
         if self._debug_enabled("print_objects_tree") and not hasattr(self, "_dbg_resolve_xref_executed"):
             self._dbg_resolve_xref_executed = True
-            debug("objects_tree", self.data["objects"].tree_repr())
+            debug("objects_tree", self.objects.visualize_tree())
 
-        identifiers = [_normalize_identifier(i) for i in _split_qualified_identifier(target)]
-
-        if len(identifiers) == 0 or (len(identifiers) == 1 and identifiers[0] == "$root"):
+        try:
+            target_identifier = VerilogQualifiedIdentifier.fromstring(target)
+        except:
             return None
 
-        obj = self.data["objects"]
+        # Special case for childrefs, e.g. port names in module declaration
+        if typ == "childref":
+            identifier = target_identifier[-1]
+            parent_obj = node.attributes.get("verilog:parent_object")
+            if parent_obj:
+                obj = parent_obj.get(identifier)
+                if not obj or obj.is_placeholder():
+                    # Workaround for childrefs to targets with "refname" set.
+                    for candidate in parent_obj.values():
+                        if candidate.name == identifier:
+                            obj = candidate
+                if obj and not obj.is_placeholder():
+                    return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, obj.name)
+            return None
 
-        if identifiers[0] != "$root":
-            scope_identifiers = node.attributes.get("verilog:scope", [])
-            try:
-                for s in scope_identifiers:
-                    obj = obj[s]
-            except:
-                scope = _make_qualified_identifier(scope_identifiers)
-                log.warning(f"{target}: reference created in non-existent scope `{scope}`.")
-                return None
-
-            # Find first identifier's scope
-            while obj and identifiers[0] not in obj:
+        # Find leading identifier's object
+        leading_identifier = target_identifier[0]
+        if leading_identifier == VerilogIdentifier.ROOT_NAME:
+            obj = self.objects
+        else:
+            obj = node.attributes.get("verilog:parent_object") or self.objects
+            while obj and leading_identifier not in obj:
                 obj = obj.parent
             if not obj:
-                log.warning(f"{target}: reference not found.")
                 return None
-            obj = obj[identifiers[0]]
+            obj = obj[leading_identifier]
 
-        # Follow remaining identifiers
+        # Find remaining identifiers
         try:
-            for identifier in identifiers[1:]:
+            for identifier in target_identifier[1:]:
                 obj = obj[identifier]
         except:
-            log.warning(f"{target}: reference not found.")
             return None
 
-        ignore_placeholders = node.attributes.get("verilog:ignore_placeholders", False)
-        if ignore_placeholders and obj.is_placeholder():
+        if not obj.linktarget:
             return None
 
-        return make_refnode(builder, fromdocname, obj.docname, obj.node_id, contnode, f"{obj.objtype} {obj.name}")
+        return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, obj.name)
 
 def setup(app):
     app.add_config_value('verilog_domain_debug', [], '')

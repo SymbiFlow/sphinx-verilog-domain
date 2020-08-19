@@ -34,15 +34,15 @@ Parameter declarations::
 
     .. verilog:parameter:: parameter logic param_name_05 = 1, param_name_05_b = 2;
 
-Declaration aliases (for use with references)::
+Custom name for use in references::
 
     .. verilog:module:: module \35(4p3|) (z);
-        :alias: module_escaped
+        :refname: module_escaped
 
 References::
 
     Reference to :verilog:ref:`Top`
-    Reference to :verilog:ref:`module_escaped`, or just :verilog:ref:`\\35(4p3|)`
+    Reference to :verilog:ref:`module_escaped` - links to ``\\35(4p3|)``
 
 Nesting::
 
