@@ -39,11 +39,45 @@ for ext,docname in _optional_extensions:
     else:
         extensions.append(ext)
 
+
+# Symbiflow theme
+html_theme = 'sphinx_symbiflow_theme'
+html_theme_options = {
+    'header_links' : [
+        ('Home', 'index', False, 'home'),
+    ],
+    # Customize css colors.
+    # For details see link.
+    # https://getmdl.io/customize/index.html
+    #
+    # Values: amber, blue, brown, cyan deep_orange, deep_purple, green, grey, indigo, light_blue,
+    #         light_green, lime, orange, pink, purple, red, teal, yellow(Default: indigo)
+    'primary_color': 'red',
+    # Values: Same as primary_color. (Default: pink)
+    'accent_color': 'blue',
+
+    # Customize layout.
+    # For details see link.
+    # https://getmdl.io/components/index.html#layout-section
+    'fixed_drawer': True,
+    'fixed_header': True,
+    'header_waterfall': True,
+    'header_scroll': False,
+
+    # Render title in header.
+    # Values: True, False (Default: False)
+    'show_header_title': False,
+    # Render title in drawer.
+    # Values: True, False (Default: True)
+    'show_drawer_title': True,
+    # Render footer.
+    # Values: True, False (Default: True)
+    'show_footer': True
+}
+
 source_suffix = '.rst'
 
 master_doc = 'index'
-
-html_theme = "alabaster"
 
 # General information about the project.
 project = 'sphinx-verilog-domain'
@@ -71,8 +105,6 @@ pygments_style = 'default'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-
-# -- Options for HTML output ----------------------------------------------
 
 html_js_files = [
     'http://livejs.com/live.js'
