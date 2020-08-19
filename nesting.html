@@ -1,48 +1,162 @@
-
 <!DOCTYPE html>
 
 <html>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    
     <title>Nesting and refs &#8212; sphinx-verilog-domain 0.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+
+    <link rel="stylesheet" href="_static/material-icons.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/notosanscjkjp.css" type="text/css" />
+    <link rel="stylesheet" href="_static/roboto.css" type="text/css" />
+    <link rel="stylesheet" href="_static/material-design-lite-1.3.0/material.red-blue.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx_symbiflow_theme.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
     <script src="http://livejs.com/live.js"></script>
+    <script src="_static/sphinx_symbiflow_theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Cross-document refs" href="nesting2.html" />
-    <link rel="prev" title="verilog:module" href="module.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+    <link rel="prev" title="verilog:module" href="module.html" /> 
+  </head>
+<body>
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-drawer"><header class="mdl-layout__header mdl-layout__header--waterfall ">
+    <div class="mdl-layout__header-row">
+        
+        <nav class="mdl-navigation breadcrumb">
+            <a class="mdl-navigation__link is-active">Nesting and refs</a>
+        </nav>
+        <div class="mdl-layout-spacer"></div>
+        <nav class="mdl-navigation">
+        
+<form class="form-inline pull-sm-right" action="search.html" method="get">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right">
+        <label id="quick-search-icon" class="mdl-button mdl-js-button mdl-button--icon"  for="waterfall-exp">
+            <i class="material-icons">search</i>
+        </label>
+        <div class="mdl-textfield__expandable-holder">
+          <input class="mdl-textfield__input" type="text" name="q"  id="waterfall-exp" placeholder="Search" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </div>
+      </div>
+      <div class="mdl-tooltip" data-mdl-for="quick-search-icon">
+      Quick search
+      </div>
+</form>
+        
+<a id="button-show-source"
+    class="mdl-button mdl-js-button mdl-button--icon"
+    href="_sources/nesting.rst.txt" rel="nofollow">
+<i class="material-icons">code</i>
+</a>
+<div class="mdl-tooltip" data-mdl-for="button-show-source">
+Show Source
+</div>
+        </nav>
+    </div>
+    <div class="mdl-layout__header-row header-links">
+      <div class="mdl-layout-spacer"></div>
+      <nav class="mdl-navigation">
+          <a  class="mdl-navigation__link" href="index.html">
+                  <i class="material-icons navigation-link-icon">home</i>
+                  Home
+              </a>
+      
+          <a  class="mdl-navigation__link" href="https://symbiflow.github.io/">
+            <i class="material-icons navigation-link-icon">web</i>
+            SymbiFlow Website
+          </a>
+          <a  class="mdl-navigation__link" href="https://symbiflow.readthedocs.io/en/latest/">
+            <i class="material-icons navigation-link-icon">library_books</i>
+            SymbiFlow Docs
+          </a></nav>
+    </div>
+</header><header class="mdl-layout__drawer">
+    
+          <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="title" href="index.html">
+              <span class="title-text">
+                  sphinx-verilog-domain
+              </span>
+          </a>
+      </span>
+    
+<div class="globaltoc">
+  <span class="mdl-layout-title toc">Table Of Contents</span>
   
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+      
+      <nav class="mdl-navigation">
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="port.html">verilog:port</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">verilog:parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">verilog:module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Nesting and refs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nesting2.html">Cross-document refs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="symbolator.html">Symbolator compatibility test</a></li>
+</ul>
 
-  </head><body>
+      </nav>
   
+  </div>
+
+</header>
+        <main class="mdl-layout__content" tabIndex="0">
+<header class="mdl-layout__drawer">
+    
+          <!-- Title -->
+      <span class="mdl-layout-title">
+          <a class="title" href="index.html">
+              <span class="title-text">
+                  sphinx-verilog-domain
+              </span>
+          </a>
+      </span>
+    
+<div class="globaltoc">
+  <span class="mdl-layout-title toc">Table Of Contents</span>
+  
+  
+      
+      <nav class="mdl-navigation">
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="port.html">verilog:port</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">verilog:parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module.html">verilog:module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Nesting and refs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nesting2.html">Cross-document refs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="symbolator.html">Symbolator compatibility test</a></li>
+</ul>
+
+      </nav>
+  
+  </div>
+
+</header>
 
     <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
-
-          <div class="body" role="main">
-            
+        <div class="page-content">
+        
   <div class="section" id="nesting-and-refs">
 <h1>Nesting and refs<a class="headerlink" href="#nesting-and-refs" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p><a class="reference internal" href="#verilog-top1-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.a</span></code> port declaration</p></li>
-<li><p><a class="reference internal" href="#verilog-top1-nested1-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code> port declaration</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-a" title="port Top1::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.a</span></code> port declaration</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-nested1-a" title="port Top1::Nested1::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code> port declaration</p></li>
 <li><p><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Nested1.a</span></code> - shouldn’t create a link (symbol does not exist in this scope)</p></li>
-<li><p><a class="reference internal" href="nesting2.html#verilog-inotherfile-p" title="p"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">InOtherFile.p</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">InOtherFile.p</span></code> port declaration which is located in another file</p></li>
-<li><p><a class="reference internal" href="#verilog-nesttest-1" title="NestTest"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">NestTest</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">NestTest</span></code>, not to <code class="docutils literal notranslate"><span class="pre">nesttest</span></code></p></li>
-<li><p><a class="reference internal" href="#verilog-nesttest" title="nesttest"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">nesttest</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">nesttest</span></code>, not to <code class="docutils literal notranslate"><span class="pre">NestTest</span></code></p></li>
+<li><p><a class="reference internal" href="nesting2.html#verilog-inotherfile-p" title="port InOtherFile::p"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">InOtherFile.p</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">InOtherFile.p</span></code> port declaration which is located in another file</p></li>
+<li><p><a class="reference internal" href="#verilog-nesttest-1" title="port NestTest"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">NestTest</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">NestTest</span></code>, not to <code class="docutils literal notranslate"><span class="pre">nesttest</span></code></p></li>
+<li><p><a class="reference internal" href="#verilog-nesttest" title="port nesttest"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">nesttest</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">nesttest</span></code>, not to <code class="docutils literal notranslate"><span class="pre">NestTest</span></code></p></li>
 <li><p><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">$root</span></code> - shouldn’t create a link</p></li>
 <li><p><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.$root</span></code> - shouldn’t create a link (invalid qualified name)</p></li>
 </ul>
@@ -53,7 +167,7 @@ module <code class="sig-name descname">a</code><span class="p">(</span><code cla
 
 <dl class="verilog module">
 <dt id="verilog-top1">
-module <code class="sig-name descname">Top1</code><span class="p">(</span><a class="reference internal" href="#verilog-top1-a" title="a"><code class="sig-prename descclassname">a</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-top1-b" title="b"><code class="sig-prename descclassname">b</code></a><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top1" title="Permalink to this definition">¶</a></dt>
+module <code class="sig-name descname">Top1</code><span class="p">(</span><a class="reference internal" href="#verilog-top1-a" title="port a"><code class="sig-prename descclassname">a</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-top1-b" title="port b"><code class="sig-prename descclassname">b</code></a><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top1" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> in the module declaration should link to following port declarations. <code class="docutils literal notranslate"><span class="pre">c</span></code> shouldn’t be a link.</p>
 <dl class="verilog port">
 <dt id="verilog-top1-a">
@@ -79,7 +193,7 @@ module <code class="sig-name descname">\35(4p3|) </code><span class="p">(</span>
 
 <dl class="verilog module">
 <dt id="verilog-top1-nested1">
-module <code class="sig-name descname">Nested1</code><span class="p">(</span><a class="reference internal" href="#verilog-top1-nested1-a" title="a"><code class="sig-prename descclassname">a</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-top1-nested1-port-b-in-module-nested1" title="b"><code class="sig-prename descclassname">b</code></a><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top1-nested1" title="Permalink to this definition">¶</a></dt>
+module <code class="sig-name descname">Nested1</code><span class="p">(</span><a class="reference internal" href="#verilog-top1-nested1-a" title="port a"><code class="sig-prename descclassname">a</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-top1-nested1-port-b-in-module-nested1" title="port b"><code class="sig-prename descclassname">b</code></a><span class="p">,</span> <code class="sig-prename descclassname">c</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top1-nested1" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> in the module declaration should link to following port declarations. <code class="docutils literal notranslate"><span class="pre">c</span></code> shouldn’t be a link.
 Note that <code class="docutils literal notranslate"><span class="pre">b</span></code> has <code class="docutils literal notranslate"><span class="pre">:refname:</span></code> set as it not normally referencable by <code class="docutils literal notranslate"><span class="pre">b</span></code></p>
 <dl class="verilog port">
@@ -101,13 +215,13 @@ input <code class="sig-name descname">b</code><span class="p">;</span><a class="
 
 <p>Refs test:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#verilog-top1-nested1-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">a</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Nested1.a</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code> port declaration</p></li>
-<li><p><a class="reference internal" href="#verilog-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">$root.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">a</span></code> module declaration in toplevel scope</p></li>
-<li><p><a class="reference internal" href="#verilog-top1-nested1" title="b"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">b</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1" title="b"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Nested1.b</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1" title="b"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.Nested1.b</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.Nested1</span></code> module declaration. The module declares the port in its ports list, and no other declaration is available.</p></li>
-<li><p><a class="reference internal" href="#verilog-top1-nested1" title="c"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">c</span></code></a>, <a class="reference internal" href="#verilog-top1" title="c"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.c</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1</span></code> module declaration.</p></li>
-<li><p><a class="reference internal" href="#verilog-top1-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.a</span></code> port declaration</p></li>
-<li><p><a class="reference internal" href="#verilog-top2-a" title="a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top2.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top2.a</span></code> port declaration</p></li>
-<li><p><a class="reference internal" href="#verilog-top1-module-escaped" title="\35(4p3|) "><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">module_escaped</span></code></a> (ref used in .rst is <code class="docutils literal notranslate"><span class="pre">module_escaped</span></code>) - should link to <code class="docutils literal notranslate"><span class="pre">Top1.\35(4p3|)</span></code> module declaration (the declaration has <code class="docutils literal notranslate"><span class="pre">refname</span></code>)</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-nested1-a" title="port Top1::Nested1::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">a</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1-a" title="port Top1::Nested1::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Nested1.a</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1-a" title="port Top1::Nested1::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.Nested1.a</span></code> port declaration</p></li>
+<li><p><a class="reference internal" href="#verilog-a" title="module a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">$root.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">a</span></code> module declaration in toplevel scope</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-nested1" title="Top1::Nested1::b"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">b</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1" title="Top1::Nested1::b"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Nested1.b</span></code></a>, <a class="reference internal" href="#verilog-top1-nested1" title="Top1::Nested1::b"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.Nested1.b</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.Nested1</span></code> module declaration. The module declares the port in its ports list, and no other declaration is available.</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-nested1" title="Top1::Nested1::c"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">c</span></code></a>, <a class="reference internal" href="#verilog-top1" title="Top1::c"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.c</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1</span></code> module declaration.</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-a" title="port Top1::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top1.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top1.a</span></code> port declaration</p></li>
+<li><p><a class="reference internal" href="#verilog-top2-a" title="port Top2::a"><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">Top2.a</span></code></a> - should link to <code class="docutils literal notranslate"><span class="pre">Top2.a</span></code> port declaration</p></li>
+<li><p><a class="reference internal" href="#verilog-top1-module-escaped" title="module Top1::\35(4p3|) "><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">module_escaped</span></code></a> (ref used in .rst is <code class="docutils literal notranslate"><span class="pre">module_escaped</span></code>) - should link to <code class="docutils literal notranslate"><span class="pre">Top1.\35(4p3|)</span></code> module declaration (the declaration has <code class="docutils literal notranslate"><span class="pre">refname</span></code>)</p></li>
 <li><p><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">\35(4p3|)</span></code> - shouldn’t create a link (<code class="docutils literal notranslate"><span class="pre">Top1.\35(4p3|)</span></code> has <code class="docutils literal notranslate"><span class="pre">refname</span></code> specified)</p></li>
 <li><p><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">LoremIpsumDolorSitAmetNestTest</span></code> - shouldn’t create a link (symbol does not exist)</p></li>
 <li><p><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">unique_port_name_in_nest_test</span></code> - shouldn’t create a link (symbol does not exist in this scope)</p></li>
@@ -121,10 +235,10 @@ input <code class="sig-name descname">b</code><span class="p">;</span><a class="
 input <code class="sig-name descname">\refname-use </code><span class="p">,</span> <code class="sig-name descname">\with-multiple-names </code><span class="p">;</span><a class="headerlink" href="#verilog-refname-use-with-multiple-names" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p><a class="reference internal" href="#verilog-refname-use-with-multiple-names" title="\refname-use "><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">refname_use_with_multiple_names</span></code></a> (<code class="docutils literal notranslate"><span class="pre">refname_use_with_multiple_names</span></code>) should refer to port definition above</p>
+<p><a class="reference internal" href="#verilog-refname-use-with-multiple-names" title="port \refname-use "><code class="xref verilog verilog-ref docutils literal notranslate"><span class="pre">refname_use_with_multiple_names</span></code></a> (<code class="docutils literal notranslate"><span class="pre">refname_use_with_multiple_names</span></code>) should refer to port definition above</p>
 <dl class="verilog module">
 <dt id="verilog-top2">
-module <code class="sig-name descname">Top2</code><span class="p">(</span><a class="reference internal" href="#verilog-top2-a" title="a"><code class="sig-prename descclassname">a</code></a><span class="p">,</span> <code class="sig-prename descclassname">b</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top2" title="Permalink to this definition">¶</a></dt>
+module <code class="sig-name descname">Top2</code><span class="p">(</span><a class="reference internal" href="#verilog-top2-a" title="port a"><code class="sig-prename descclassname">a</code></a><span class="p">,</span> <code class="sig-prename descclassname">b</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top2" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">a</span></code> in the module declaration should link to following port declaration. <code class="docutils literal notranslate"><span class="pre">b</span></code> shouldn’t be a link.</p>
 <dl class="verilog port">
 <dt id="verilog-top2-a">
@@ -135,7 +249,7 @@ input <code class="sig-name descname">a</code><span class="p">;</span><a class="
 
 <dl class="verilog module">
 <dt id="verilog-top3">
-module <code class="sig-name descname">Top3</code><span class="p">(</span><code class="sig-prename descclassname">x</code><span class="p">,</span> <a class="reference internal" href="#verilog-top3-y" title="y"><code class="sig-prename descclassname">y</code></a><span class="p">,</span> <code class="sig-prename descclassname">unique_port_name_in_nest_test</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top3" title="Permalink to this definition">¶</a></dt>
+module <code class="sig-name descname">Top3</code><span class="p">(</span><code class="sig-prename descclassname">x</code><span class="p">,</span> <a class="reference internal" href="#verilog-top3-y" title="port y"><code class="sig-prename descclassname">y</code></a><span class="p">,</span> <code class="sig-prename descclassname">unique_port_name_in_nest_test</code><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-top3" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">y</span></code> in the module declaration should link to following port declaration. <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">unique_port_name_in_nest_test</span></code> shouldn’t be a link.</p>
 <dl class="verilog port">
 <dt id="verilog-top3-y">
@@ -251,75 +365,57 @@ input <code class="sig-name descname">y</code><span class="p">;</span><a class="
 </div>
 
 
-          </div>
-          
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">sphinx-verilog-domain</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="port.html">verilog:port</a></li>
-<li class="toctree-l1"><a class="reference internal" href="parameter.html">verilog:parameter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module.html">verilog:module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Nesting and refs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="nesting2.html">Cross-document refs</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="module.html" title="previous chapter">verilog:module</a></li>
-      <li>Next: <a href="nesting2.html" title="next chapter">Cross-document refs</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
+        <div class="side-doc-outline">
+            <div class="side-doc-outline--content"> 
+            </div>
         </div>
-      </div>
+
       <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2018, Various.
+    </div><div class="pagenation">
+     <a id="button-prev" href="module.html" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" role="botton" accesskey="P">
+         <i class="pagenation-arrow-L material-icons">arrow_back</i>
+         <div class="pagenation-text">
+            <span class="pagenation-direction">Previous</span>
+            <div>verilog:module</div>
+         </div>
+     </a>
+     <a id="button-next" href="nesting2.html" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--colored" role="botton" accesskey="N">
+        <i class="pagenation-arrow-R material-icons">arrow_forward</i>
+        <div class="pagenation-text">
+            <span class="pagenation-direction">Next</span>
+            <div>Cross-document refs</div>
+        </div>
+     </a>
+</div>
+        <footer class="mdl-mini-footer">
+    <div class="mdl-mini-footer__left-section">
+      <div class="mdl-logo">sphinx-verilog-domain</div>
       
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/nesting.rst.txt"
-          rel="nofollow">Page source</a>
+        <div>
+          <ul>
+            <li>
+              <a href="https://symbiflow.github.io/" target="_blank">SymbiFlow</a>
+            </li>
+            <li>
+              <a href="https://lists.librecores.org/listinfo/symbiflow" target="_blank">Mailing List</a>
+            </li>
+            <li>
+              <a href="https://webchat.freenode.net/#symbiflow" target="_blank">IRC</a>
+            </li>
+            <li>
+              <a href="https://join.slack.com/t/symbiflow/shared_invite/enQtNTkyMjcyNTkzOTY4LTU0MzhmYWNjOGMyMTkyNjA0MmEyMWM5OWY3ZDg5MWQ3ODlmOWQwZjk2YzBmMDBjMzkzMzNjYjkwYjAxZTMyNjQ">Slack</a>
+            </li>
+          </ul>
+        </div>
     </div>
 
-    
-
-    
+    <div class="mdl-mini-footer__right-section">
+        <div>&copy; Copyright 2018, Various.</div>
+      <div>Generated by <a href="http://sphinx.pocoo.org/">Sphinx</a> 3.1.2 using <a href="https://github.com/SymbiFlow/sphinx_symbiflow_theme">sphinx_symbiflow_theme</a>.</div>
+    </div>
+</footer>
+        </main>
+    </div>
   </body>
 </html>
