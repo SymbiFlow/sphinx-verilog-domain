@@ -149,11 +149,68 @@ Show Source
         
   <div class="section" id="symbolator-compatibility-test">
 <h1>Symbolator compatibility test<a class="headerlink" href="#symbolator-compatibility-test" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-center" id="vlog-example">
-<object data="_images/symbol-vlog-example.svg" type="image/svg+xml">
+<dl class="verilog module">
+<dt id="verilog-sincos">
+module <code class="sig-name descname">sincos</code><span class="p">(</span><a class="reference internal" href="#verilog-sincos-cos-z0" title="port cos_z0"><code class="sig-prename descclassname">cos_z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-sincos-sin-z0" title="port sin_z0"><code class="sig-prename descclassname">sin_z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-sincos-done" title="port done"><code class="sig-prename descclassname">done</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-sincos-z0" title="port z0"><code class="sig-prename descclassname">z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-sincos-start" title="port start"><code class="sig-prename descclassname">start</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-sincos-clock" title="port clock"><code class="sig-prename descclassname">clock</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-sincos-reset" title="port reset"><code class="sig-prename descclassname">reset</code></a><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-sincos" title="Permalink to this definition">¶</a></dt>
+<dd><div class="figure align-center" id="sincos-block-view">
+<object data="_images/symbol-sincos-block-view.svg" type="image/svg+xml">
             <p class="warning">Alt text</p></object>
-<p class="caption"><span class="caption-text">Caption text</span><a class="headerlink" href="#vlog-example" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">sincos</span></code> symbolic view</span><a class="headerlink" href="#sincos-block-view" title="Permalink to this image">¶</a></p>
 </div>
+<p>Sine and cosine computer. <a class="reference external" href="https://github.com/YosysHQ/yosys/blob/master/tests/simple/sincos.v">Source</a></p>
+<p>This module computes the sine and cosine of an input angle. The
+floating point numbers are represented as integers by scaling them
+up with a factor corresponding to the number of bits after the point.</p>
+<dl class="verilog port">
+<dt id="verilog-sincos-cos-z0">
+output signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">cos_z0</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-cos-z0" title="Permalink to this definition">¶</a></dt>
+<dt>
+reg signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">cos_z0</code><span class="p">;</span></dt>
+<dd><p>cosine of the input angle</p>
+</dd></dl>
+
+<dl class="verilog port">
+<dt id="verilog-sincos-sin-z0">
+output signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">sin_z0</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-sin-z0" title="Permalink to this definition">¶</a></dt>
+<dt>
+reg signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">sin_z0</code><span class="p">;</span></dt>
+<dd><p>sine of the input angle</p>
+</dd></dl>
+
+<dl class="verilog port">
+<dt id="verilog-sincos-done">
+output <code class="sig-name descname">done</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-done" title="Permalink to this definition">¶</a></dt>
+<dt>
+reg <code class="sig-name descname">done</code><span class="p">;</span></dt>
+<dd><p>output flag indicated completion of the computation</p>
+</dd></dl>
+
+<dl class="verilog port">
+<dt id="verilog-sincos-z0">
+input signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">z0</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-z0" title="Permalink to this definition">¶</a></dt>
+<dd><p>input angle</p>
+</dd></dl>
+
+<dl class="verilog port">
+<dt id="verilog-sincos-start">
+input <code class="sig-name descname">start</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-start" title="Permalink to this definition">¶</a></dt>
+<dd><p>input that starts the computation on a posedge</p>
+</dd></dl>
+
+<dl class="verilog port">
+<dt id="verilog-sincos-clock">
+input <code class="sig-name descname">clock</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-clock" title="Permalink to this definition">¶</a></dt>
+<dd><p>clock input</p>
+</dd></dl>
+
+<dl class="verilog port">
+<dt id="verilog-sincos-reset">
+input <code class="sig-name descname">reset</code><span class="p">;</span><a class="headerlink" href="#verilog-sincos-reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>reset input</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
