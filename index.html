@@ -46,57 +46,57 @@
 </div>
 <hr class="docutils" />
 <dl class="verilog module">
-<dt id="verilog-module-d">
-module <code class="sig-name descname">d</code><span class="p">(</span><a class="reference internal" href="#verilog-port-d-cos-z0" title="port cos_z0"><code class="sig-prename descclassname">cos_z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-port-d-sin-z0" title="port sin_z0"><code class="sig-prename descclassname">sin_z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-port-d-done" title="port done"><code class="sig-prename descclassname">done</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-port-d-z0" title="port z0"><code class="sig-prename descclassname">z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-port-d-start" title="port start"><code class="sig-prename descclassname">start</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-port-d-clock" title="port clock"><code class="sig-prename descclassname">clock</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-port-d-reset" title="port reset"><code class="sig-prename descclassname">reset</code></a><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-module-d" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d">
+module <code class="sig-name descname">d</code><span class="p">(</span><a class="reference internal" href="#verilog-d-cos-z0" title="cos_z0"><code class="sig-prename descclassname">cos_z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-d-sin-z0" title="sin_z0"><code class="sig-prename descclassname">sin_z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-d-done" title="done"><code class="sig-prename descclassname">done</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-d-z0" title="z0"><code class="sig-prename descclassname">z0</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-d-start" title="start"><code class="sig-prename descclassname">start</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-d-clock" title="clock"><code class="sig-prename descclassname">clock</code></a><span class="p">,</span> <a class="reference internal" href="#verilog-d-reset" title="reset"><code class="sig-prename descclassname">reset</code></a><span class="p">)</span><span class="p">;</span><a class="headerlink" href="#verilog-d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sine and cosine computer. <a class="reference external" href="https://github.com/YosysHQ/yosys/blob/master/tests/simple/sincos.v">Source</a></p>
 <p>This module computes the sine and cosine of an input angle. The
 floating point numbers are represented as integers by scaling them
 up with a factor corresponding to the number of bits after the point.</p>
 <dl class="verilog port">
-<dt id="verilog-port-d-cos-z0">
-output signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">cos_z0</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-cos-z0" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-cos-z0">
+output signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">cos_z0</code><span class="p">;</span><a class="headerlink" href="#verilog-d-cos-z0" title="Permalink to this definition">¶</a></dt>
 <dt>
 reg signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">cos_z0</code><span class="p">;</span></dt>
 <dd><p>cosine of the input angle</p>
 </dd></dl>
 
 <dl class="verilog port">
-<dt id="verilog-port-d-sin-z0">
-output signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">sin_z0</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-sin-z0" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-sin-z0">
+output signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">sin_z0</code><span class="p">;</span><a class="headerlink" href="#verilog-d-sin-z0" title="Permalink to this definition">¶</a></dt>
 <dt>
 reg signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">sin_z0</code><span class="p">;</span></dt>
 <dd><p>sine of the input angle</p>
 </dd></dl>
 
 <dl class="verilog port">
-<dt id="verilog-port-d-done">
-output <code class="sig-name descname">done</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-done" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-done">
+output <code class="sig-name descname">done</code><span class="p">;</span><a class="headerlink" href="#verilog-d-done" title="Permalink to this definition">¶</a></dt>
 <dt>
 reg <code class="sig-name descname">done</code><span class="p">;</span></dt>
 <dd><p>output flag indicated completion of the computation</p>
 </dd></dl>
 
 <dl class="verilog port">
-<dt id="verilog-port-d-z0">
-input signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">z0</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-z0" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-z0">
+input signed <span class="p">[</span><span>19:0</span><span class="p">]</span> <code class="sig-name descname">z0</code><span class="p">;</span><a class="headerlink" href="#verilog-d-z0" title="Permalink to this definition">¶</a></dt>
 <dd><p>input angle</p>
 </dd></dl>
 
 <dl class="verilog port">
-<dt id="verilog-port-d-start">
-input <code class="sig-name descname">start</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-start" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-start">
+input <code class="sig-name descname">start</code><span class="p">;</span><a class="headerlink" href="#verilog-d-start" title="Permalink to this definition">¶</a></dt>
 <dd><p>input that starts the computation on a posedge</p>
 </dd></dl>
 
 <dl class="verilog port">
-<dt id="verilog-port-d-clock">
-input <code class="sig-name descname">clock</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-clock" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-clock">
+input <code class="sig-name descname">clock</code><span class="p">;</span><a class="headerlink" href="#verilog-d-clock" title="Permalink to this definition">¶</a></dt>
 <dd><p>clock input</p>
 </dd></dl>
 
 <dl class="verilog port">
-<dt id="verilog-port-d-reset">
-input <code class="sig-name descname">reset</code><span class="p">;</span><a class="headerlink" href="#verilog-port-d-reset" title="Permalink to this definition">¶</a></dt>
+<dt id="verilog-d-reset">
+input <code class="sig-name descname">reset</code><span class="p">;</span><a class="headerlink" href="#verilog-d-reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>reset input</p>
 </dd></dl>
 

@@ -34,11 +34,12 @@ Nesting and refs
         Duplicated name test: created link target should be unique (compare with previous ``b`` declaration)
 
     .. verilog:module:: module \35(4p3|) (z);
-        :alias: module_escaped
+        :refname: module_escaped
 
-    .. verilog:module:: module Nested1(a, b);
+    .. verilog:module:: module Nested1(a, b, c);
 
-        ``a`` in the module declaration should link to following port declaration. ``b`` shouldn't be a link.
+        ``a`` and ``b`` in the module declaration should link to following port declarations. ``c`` shouldn't be a link.
+        Note that ``b`` has ``:refname:`` set as it not normally referencable by ``b``
 
         .. verilog:port:: input a;
 
@@ -47,6 +48,9 @@ Nesting and refs
                 ``a`` in the module declaration shouldn't be a link.
 
                 This module is located inside ``input a``'s ReST directive's content. However, it should be registered directly in module ``Nested1`` scope.
+
+        .. verilog:port:: input b;
+            :refname: port_b_in_module_nested1
 
         Refs test:
 
@@ -62,15 +66,18 @@ Nesting and refs
 
         * :verilog:ref:`Top2.a` - should link to ``Top2.a`` port declaration
 
+        * :verilog:ref:`module_escaped` (ref used in .rst is ``module_escaped``) - should link to ``Top1.\35(4p3|)`` module declaration (the declaration has ``refname``)
+
+        * :verilog:ref:`\\35(4p3|)` - shouldn't create a link (``Top1.\35(4p3|)`` has ``refname`` specified)
+
         * :verilog:ref:`LoremIpsumDolorSitAmetNestTest` - shouldn't create a link (symbol does not exist)
 
         * :verilog:ref:`unique_port_name_in_nest_test` - shouldn't create a link (symbol does not exist in this scope)
 
-        * :verilog:ref:`\\35(4p3|)` - should link to ``Top1.\35(4p3|)`` module declaration
+.. verilog:port:: input \refname-use , \with-multiple-names ;
+    :refname: refname_use_with_multiple_names
 
-        * :verilog:ref:`module_escaped` (ref used in .rst is ``module_escaped``) - should link to ``Top1.\35(4p3|)`` module declaration (the declaration has ``alias``)
-
-
+:verilog:ref:`refname_use_with_multiple_names` (``refname_use_with_multiple_names``) should refer to port definition above
 
 .. verilog:module:: module Top2(a, b);
 
@@ -80,7 +87,7 @@ Nesting and refs
 
 .. verilog:module:: module Top3(x, y, unique_port_name_in_nest_test);
 
-    ``y`` and ``unique_port_name_in_nest_test`` in the module declaration should link to following port declaration. ``x`` shouldn't be a link.
+    ``y`` in the module declaration should link to following port declaration. ``x`` and ``unique_port_name_in_nest_test`` shouldn't be a link.
 
     .. verilog:port:: input y;
 
