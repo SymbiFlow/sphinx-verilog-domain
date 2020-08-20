@@ -10,6 +10,7 @@ Verilog Domain test
    nesting2
 
    symbolator
+   verilog_diagrams
 
 ----
 

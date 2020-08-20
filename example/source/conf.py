@@ -29,7 +29,8 @@ exclude_patterns = []
 # Optional extensions, used only for compatibility checks
 _optional_extensions = [
     # (extension_name, extension_test_document)
-    ("symbolator_sphinx", "symbolator.rst")
+    ("symbolator_sphinx", "symbolator.rst"),
+    ("sphinxcontrib_verilog_diagrams", "verilog_diagrams.rst"),
 ]
 import importlib
 for ext,docname in _optional_extensions:
