@@ -500,7 +500,7 @@ class VerilogDomainObject:
         return list(reversed(objects))
 
     def is_placeholder(self):
-        return self.parent is not None and self.parent.linktarget == self.linktarget
+        return self.parent is not None and self.linktarget and self.linktarget == self.parent.linktarget
 
     def is_only_namespace(self):
         return self.linktarget is None
