@@ -289,7 +289,7 @@ class BaseVerilogDirective(ObjectDescription):
                 if obj.parent.linktarget:
                     parent_linktarget = obj.parent.linktarget
                 else:
-                    parent_linktarget = make_unique_linktarget(obj.name.normalize(), obj.parent, used_ids)
+                    parent_linktarget = make_unique_linktarget(obj.parent.name.normalize(), obj.parent, used_ids)
             else:
                 assert obj.name == VerilogIdentifier.ROOT_NAME, "Object must be added to domain's object tree before calling this function."
                 return "verilog"
