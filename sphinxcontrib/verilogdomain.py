@@ -541,6 +541,9 @@ class VerilogDomainObject:
     def __setitem__(self, key, obj):
         assert isinstance(obj, VerilogDomainObject)
         assert obj not in self.path()
+        key = VerilogIdentifier(key)
+        if key == VerilogIdentifier.ROOT_NAME:
+            raise ValueError(f"Invalid identifier: {key}")
 
         if key in self:
             del self[key]
