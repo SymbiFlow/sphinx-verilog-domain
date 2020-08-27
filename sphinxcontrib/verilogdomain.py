@@ -9,6 +9,7 @@ from sphinx.domains import Domain
 from sphinx.domains import Index
 from sphinx.roles import XRefRole
 from sphinx.util.nodes import make_refnode
+from sphinx.util.docutils import SphinxDirective
 import lark
 import re
 from os import path
@@ -196,7 +197,9 @@ class BaseVerilogDirective(ObjectDescription):
         except:
             self.refname = None
         self.parent_object = self.current_object
+        parent_namespace_stack = self.env.temp_data.get("verilog:namespace_stack", [])
         nodes = super().run()
+        self.env.temp_data["verilog:namespace_stack"] = parent_namespace_stack
         self.current_object = self.parent_object
         return nodes
 
@@ -390,6 +393,88 @@ class VerilogXRefRole(XRefRole):
     def process_link(self, env, refnode, has_explicit_title: bool, title: str, target: str):
         refnode["verilog:parent_object"] = env.temp_data.get("verilog:current_object")
         return super().process_link(env, refnode, has_explicit_title, title, target)
+
+
+class NamespaceDirective(SphinxDirective):
+    has_content = False
+    required_arguments = 0
+    optional_arguments = 1
+    final_argument_whitespace = True
+
+    def run(self):
+        domain = self.env.get_domain("verilog")
+        obj = domain.root_object
+        if len(self.arguments) > 0 and self.arguments[0].strip():
+            try:
+                qualified_identifier = VerilogQualifiedIdentifier.fromstring(self.arguments[0].strip())
+            except Exception as e:
+                log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+                return []
+
+            # Namespace is always relative to current namespace
+            if qualified_identifier[0] == VerilogIdentifier.ROOT_NAME:
+                qualified_identifier = qualified_identifier[1:]
+
+            try:
+                for identifier in qualified_identifier:
+                    obj = obj.setdefault(identifier, VerilogDomainObject(identifier))
+            except Exception as e:
+                log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+                return []
+
+        self.env.temp_data["verilog:namespace_stack"] = []
+        self.env.temp_data["verilog:current_object"] = obj
+        return []
+
+
+class NamespacePushDirective(SphinxDirective):
+    has_content = False
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+
+    def run(self):
+        domain = self.env.get_domain("verilog")
+        obj = self.env.temp_data.get("verilog:current_object", domain.root_object)
+        ns_stack = self.env.temp_data.get("verilog:namespace_stack", [])
+        ns_stack.append(obj)
+
+        try:
+            qualified_identifier = VerilogQualifiedIdentifier.fromstring(self.arguments[0].strip())
+        except Exception as e:
+            log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+            return []
+
+        try:
+            for identifier in qualified_identifier:
+                obj = obj.setdefault(identifier, VerilogDomainObject(identifier))
+        except Exception as e:
+            log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+            return []
+
+        self.env.temp_data["verilog:namespace_stack"] = ns_stack
+        self.env.temp_data["verilog:current_object"] = obj
+        return []
+
+
+class NamespacePopDirective(SphinxDirective):
+    has_content = False
+    required_arguments = 0
+    optional_arguments = 0
+
+    def run(self):
+        ns_stack = self.env.temp_data.get("verilog:namespace_stack", [])
+        if len(ns_stack) > 0:
+            obj = ns_stack.pop()
+            self.env.temp_data["verilog:namespace_stack"] = ns_stack
+            self.env.temp_data["verilog:current_object"] = obj
+        else:
+            log.warning(f"{self.name}: pop on empty stack. Defaulting to global scope.", location=(self.env.docname, self.lineno))
+            domain = self.env.get_domain("verilog")
+            self.env.temp_data["verilog:namespace_stack"] = []
+            self.env.temp_data["verilog:current_object"] = domain.root_object
+
+        return []
 
 #-------------------------------------------------------------------------------
 
@@ -590,6 +675,9 @@ class VerilogDomain(Domain):
         "module": ModuleDirective,
         "parameter": ParameterDirective,
         "port": PortDirective,
+        "namespace": NamespaceDirective,
+        "namespace-push": NamespacePushDirective,
+        "namespace-pop": NamespacePopDirective,
     }
     initial_data = {
         "objects": VerilogDomainObject(name=VerilogIdentifier.ROOT_NAME),

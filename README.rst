@@ -63,3 +63,29 @@ Nesting::
                 Description of port ``a`` in ``Nested``
 
             Reference to module ``Top1``'s port ``a``: :verilog:ref:`Top1.a`.
+
+
+Namespaces
+^^^^^^^^^^
+
+There are three directives for changing current Verilog scope:
+
+* ``.. verilog:namespace:: A::B`` - sets current scope to ``A::B``. Using ``$root`` as an argument or using the directive without argument at all sets global namespace.
+
+* ``.. verilog:namespace-push:: C::D`` - sets current scope to ``C::D`` relatively to current scope
+
+* ``.. verilog:namespace-pop::`` - restores scope which was active before previous ``namespace-push`` was called. If there is no matching ``namespace-push``, scope is set to global scope.
+
+.. note::
+    ``verilog::namespace`` resets push/pop stack
+
+Example::
+
+    .. verilog:namespace:: A::B
+    .. verilog:port:: input inside_a_b;
+    .. verilog:namespace-push:: C::D
+    .. verilog:port:: input inside_a_b_c_d;
+    .. verilog:namespace-pop::
+    .. verilog:port:: input inside_a_b_again;
+    .. verilog:namespace::
+    .. verilog:port:: input in_global_namespace;
