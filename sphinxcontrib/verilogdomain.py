@@ -218,7 +218,6 @@ class BaseVerilogDirective(ObjectDescription):
             new_values[0::2] = values
             return new_values
 
-
         names = []
         placeholders = []
         for n,p in self.names:
@@ -235,10 +234,10 @@ class BaseVerilogDirective(ObjectDescription):
                 decls += nodes.Text(" as ")
                 decls += nodes.literal(text=self.refname)
 
-            namespace = self.parent_object.qualified_name
+            namespace = VerilogQualifiedIdentifier(self.parent_object.qualified_name[1:])
             if len(namespace) > 0:
                 decls += nodes.Text(" in ")
-                decls += nodes.literal(text=".".join(namespace))
+                decls += nodes.literal(text=str(namespace))
         if placeholders:
             refs = nodes.line(text="Placeholders: ")
             dbg_info += refs
