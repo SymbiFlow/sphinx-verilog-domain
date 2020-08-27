@@ -180,7 +180,7 @@ class BaseVerilogDirective(ObjectDescription):
     @property
     def current_object(self):
         domain = self.env.get_domain("verilog")
-        return self.env.temp_data.setdefault("verilog:current_object", domain.objects)
+        return self.env.temp_data.setdefault("verilog:current_object", domain.root_object)
 
     @current_object.setter
     def current_object(self, value):
@@ -594,7 +594,7 @@ class VerilogDomain(Domain):
     }
 
     @property
-    def objects(self):
+    def root_object(self):
         return self.data["objects"]
 
     def _debug_enabled(self, cat):
@@ -606,14 +606,14 @@ class VerilogDomain(Domain):
             for child in obj.values():
                 yield from iter_tree(child)
 
-        for obj in iter_tree(self.objects):
+        for obj in iter_tree(self.root_object):
             if not (obj.is_only_namespace() or obj.is_placeholder()):
                 yield str(obj.qualified_name), str(obj.qualified_name), obj.objtype or "", obj.docname, obj.linktarget, 1
 
     def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
         if self._debug_enabled("print_objects_tree") and not hasattr(self, "_dbg_resolve_xref_executed"):
             self._dbg_resolve_xref_executed = True
-            debug("objects_tree", self.objects.visualize_tree())
+            debug("objects_tree", self.root_object.visualize_tree())
 
         try:
             target_identifier = VerilogQualifiedIdentifier.fromstring(target)
@@ -639,9 +639,9 @@ class VerilogDomain(Domain):
         # Find leading identifier's object
         leading_identifier = target_identifier[0]
         if leading_identifier == VerilogIdentifier.ROOT_NAME:
-            obj = self.objects
+            obj = self.root_object
         else:
-            obj = node.attributes.get("verilog:parent_object") or self.objects
+            obj = node.attributes.get("verilog:parent_object") or self.root_object
             while obj and leading_identifier not in obj:
                 obj = obj.parent
             if not obj:
