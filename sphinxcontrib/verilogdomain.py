@@ -366,7 +366,7 @@ class ModuleDirective(BaseVerilogDirective):
     start_rule = "module"
 
     def process_token(self, token, rules=[]):
-        if token.type == "ID" and "id_port" in rules:
+        if token.type == "ID" and {"id_port", "id_parameter"}.intersection(rules):
             name = VerilogIdentifier(token.value)
             yield ("placeholder", name)
 
