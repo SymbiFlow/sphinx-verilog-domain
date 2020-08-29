@@ -307,14 +307,17 @@ parameter_decl: KW_PARAM KW_OTHER* expr_bracket* parameter_assignment (SYM_COMMA
 
 // Modules
 
-module: non_ansi_module_decl SYM_SEMICOLON?
+module: module_decl SYM_SEMICOLON?
 
 id_module.-1: ID
 id_ext_port.-1: ID
 parameter_decl_or_assignment: KW_PARAM? KW_OTHER* expr_bracket* parameter_assignment
 parameter_port_list: SYM_HASH SYM_PAREN_L (parameter_decl_or_assignment (SYM_COMMA parameter_decl_or_assignment)*)? SYM_PAREN_R
-port_expr: port_ref
-         | SYM_BRACE_L port_ref (SYM_COMMA port_ref)* SYM_BRACE_R
-non_ansi_module_port: port_expr
-                    | OP_DOT id_ext_port SYM_PAREN_L port_expr? SYM_PAREN_R
-non_ansi_module_decl: (expr_attr)? KW_MODULE id_module parameter_port_list? SYM_PAREN_L non_ansi_module_port (SYM_COMMA non_ansi_module_port)* SYM_PAREN_R
+
+module_port_expr: port_ref
+                | SYM_BRACE_L port_ref (SYM_COMMA port_ref)* SYM_BRACE_R
+module_port: KW_OTHER* expr_bracket* module_port_expr
+           | KW_OTHER? OP_DOT id_ext_port SYM_PAREN_L (module_port_expr)? SYM_PAREN_R
+module_port_assignment: module_port (OP_EQUAL expr+)?
+module_port_list: (expr_attr)? module_port_assignment (SYM_COMMA (expr_attr)? module_port_assignment)*
+module_decl: (expr_attr)? KW_MODULE id_module parameter_port_list? SYM_PAREN_L module_port_list? SYM_PAREN_R
