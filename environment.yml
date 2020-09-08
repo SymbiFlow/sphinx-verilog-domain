@@ -1,0 +1,19 @@
+name: sphinx-verilog-domain
+channels:
+- symbiflow
+- conda-forge
+- defaults
+dependencies:
+- python=3.7
+- docutils
+- sphinx
+- pango
+- pycairo
+- pygobject
+- yosys
+- netlistsvg
+- pip
+- pip:
+  - -r file:requirements.txt
+  - -r file:docs/requirements.txt
+  - .

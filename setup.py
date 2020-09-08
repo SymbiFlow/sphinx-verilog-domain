@@ -14,11 +14,13 @@ setuptools.setup(
     url="https://github.com/SymbiFlow/sphinx-verilog-domain",
     python_requires=">=3.7",
     packages=setuptools.find_packages(),
+    package_data={'': ["verilog.lark"]},
+    include_package_data=True,
     install_requires=[
-       'setuptools',
-       'docutils',
-       'sphinx',
-       'lark-parser'
+        'setuptools',
+        'docutils',
+        'sphinx',
+        'lark-parser'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

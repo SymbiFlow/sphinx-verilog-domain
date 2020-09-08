@@ -32,7 +32,8 @@ release = '0.1'
 # ones.
 extensions = [
   'sphinx-verilog-domain',
-  'symbolator_sphinx'
+  'symbolator_sphinx',
+  'sphinxcontrib_verilog_diagrams'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
