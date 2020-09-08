@@ -1,0 +1,16 @@
+language: minimal
+
+stages:
+    - name:
+        - Deploy
+
+jobs:
+    - stage: Deploy
+      name: "PyPI"
+      before_deploy:
+        - sudo ln -sf /usr/bin/python3 /usr/bin/python
+      deploy:
+        provider: pypi
+        username: __token__
+        distributions: sdist bdist_wheel
+        skip_existing: true
