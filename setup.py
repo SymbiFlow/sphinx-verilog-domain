@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="sphinx-verilog-domain",
-    version="0.0.1",
+    version="0.0.2",
     author="SymbiFlow Authors",
     author_email="symbiflow@lists.librecores.org",
     description="Verilog Domain for Sphinx",
