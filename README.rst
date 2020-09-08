@@ -1,11 +1,9 @@
-Sphinx Verilog Domain
+sphinx-verilog-domain
 =====================
 
 .. warning::
-    This extension is in development stage.
 
-.. note::
-    This extension is not a part of sphinxcontrib yet.
+    This extension is in development stage.
 
 Dependencies
 ------------
@@ -17,7 +15,7 @@ Enabling
 
 Add extension in ``conf.py``::
 
-    extensions = [ 'sphinxcontrib.verilogdomain' ]
+    extensions = [ 'sphinxcontrib-verilog-domain' ]
 
 Usage
 -----

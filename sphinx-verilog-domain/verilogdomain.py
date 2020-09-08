@@ -753,13 +753,3 @@ class VerilogDomain(Domain):
         qualified_name_without_root = VerilogQualifiedIdentifier(obj.qualified_name[1:])
         tooltip = f"{obj.objtype} {qualified_name_without_root}" if obj.objtype else f"{qualified_name_without_root}"
         return make_refnode(builder, fromdocname, obj.docname, obj.linktarget, contnode, tooltip)
-
-def setup(app):
-    app.add_config_value('verilog_domain_debug', [], '')
-    app.add_domain(VerilogDomain)
-
-    return {
-        "version": "0.1",
-        "parallel_read_safe": True,
-        "parallel_write_safe": True,
-    }
