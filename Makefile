@@ -18,3 +18,18 @@ REQUIREMENTS_FILE := requirements.txt
 ENVIRONMENT_FILE := environment.yml
 
 include third_party/make-env/conda.mk
+
+# Build the package locally
+
+build: $(CONDA_ENV_PYTHON)
+	$(IN_CONDA_ENV) python setup.py sdist bdist_wheel && twine check dist/*
+
+build-clean:
+	rm -rf env/downloads/conda-pkgs
+	rm -rf build dist *.egg-info
+	find -name *.pyc -delete
+	find -name __pycache__ -delete
+
+.PHONY: build build-clean
+
+clean:: build-clean

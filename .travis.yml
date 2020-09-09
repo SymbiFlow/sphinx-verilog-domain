@@ -1,10 +1,20 @@
 language: minimal
 
+before_install:
+  - make env
+  - source env/conda/bin/activate sphinx-verilog-domain
+
 stages:
     - name:
+        - Build
         - Deploy
 
 jobs:
+    - stage: Build
+      name: "Build"
+      script:
+        - make build
+
     - stage: Deploy
       name: "PyPI"
       before_deploy:

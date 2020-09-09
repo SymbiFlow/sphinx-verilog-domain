@@ -1,2 +1,5 @@
 sphinx
 lark-parser
+
+# To validate package building
+twine
