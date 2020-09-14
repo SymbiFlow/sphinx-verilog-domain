@@ -15,7 +15,7 @@ Enabling
 
 Add extension in ``conf.py``::
 
-    extensions = [ 'sphinx-verilog-domain' ]
+    extensions = [ 'sphinx_verilog_domain' ]
 
 Usage
 -----

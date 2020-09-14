@@ -31,7 +31,7 @@ release = '0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-  'sphinx-verilog-domain',
+  'sphinx_verilog_domain',
   'symbolator_sphinx',
   'sphinxcontrib_verilog_diagrams'
 ]
