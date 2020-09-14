@@ -8,6 +8,7 @@ Verilog Domain test
    module
    nesting
    nesting2
+   namespace
 
    symbolator
    verilog_diagrams

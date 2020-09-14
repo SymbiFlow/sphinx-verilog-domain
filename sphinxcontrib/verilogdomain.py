@@ -9,6 +9,7 @@ from sphinx.domains import Domain
 from sphinx.domains import Index
 from sphinx.roles import XRefRole
 from sphinx.util.nodes import make_refnode
+from sphinx.util.docutils import SphinxDirective
 import lark
 import re
 from os import path
@@ -181,7 +182,7 @@ class BaseVerilogDirective(ObjectDescription):
     @property
     def current_object(self):
         domain = self.env.get_domain("verilog")
-        return self.env.temp_data.setdefault("verilog:current_object", domain.objects)
+        return self.env.temp_data.setdefault("verilog:current_object", domain.root_object)
 
     @current_object.setter
     def current_object(self, value):
@@ -197,7 +198,9 @@ class BaseVerilogDirective(ObjectDescription):
         except:
             self.refname = None
         self.parent_object = self.current_object
+        parent_namespace_stack = self.env.temp_data.get("verilog:namespace_stack", [])
         nodes = super().run()
+        self.env.temp_data["verilog:namespace_stack"] = parent_namespace_stack
         self.current_object = self.parent_object
         return nodes
 
@@ -219,7 +222,6 @@ class BaseVerilogDirective(ObjectDescription):
             new_values[0::2] = values
             return new_values
 
-
         names = []
         placeholders = []
         for n,p in self.names:
@@ -236,10 +238,10 @@ class BaseVerilogDirective(ObjectDescription):
                 decls += nodes.Text(" as ")
                 decls += nodes.literal(text=self.refname)
 
-            namespace = self.parent_object.qualified_name
+            namespace = VerilogQualifiedIdentifier(self.parent_object.qualified_name[1:])
             if len(namespace) > 0:
                 decls += nodes.Text(" in ")
-                decls += nodes.literal(text=".".join(namespace))
+                decls += nodes.literal(text=str(namespace))
         if placeholders:
             refs = nodes.line(text="Placeholders: ")
             dbg_info += refs
@@ -290,7 +292,7 @@ class BaseVerilogDirective(ObjectDescription):
                 if obj.parent.linktarget:
                     parent_linktarget = obj.parent.linktarget
                 else:
-                    parent_linktarget = make_unique_linktarget(obj.name.normalize(), obj.parent, used_ids)
+                    parent_linktarget = make_unique_linktarget(obj.parent.name.normalize(), obj.parent, used_ids)
             else:
                 assert obj.name == VerilogIdentifier.ROOT_NAME, "Object must be added to domain's object tree before calling this function."
                 return "verilog"
@@ -392,6 +394,88 @@ class VerilogXRefRole(XRefRole):
     def process_link(self, env, refnode, has_explicit_title: bool, title: str, target: str):
         refnode["verilog:parent_object"] = env.temp_data.get("verilog:current_object")
         return super().process_link(env, refnode, has_explicit_title, title, target)
+
+
+class NamespaceDirective(SphinxDirective):
+    has_content = False
+    required_arguments = 0
+    optional_arguments = 1
+    final_argument_whitespace = True
+
+    def run(self):
+        domain = self.env.get_domain("verilog")
+        obj = domain.root_object
+        if len(self.arguments) > 0 and self.arguments[0].strip():
+            try:
+                qualified_identifier = VerilogQualifiedIdentifier.fromstring(self.arguments[0].strip())
+            except Exception as e:
+                log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+                return []
+
+            # Namespace is always relative to current namespace
+            if qualified_identifier[0] == VerilogIdentifier.ROOT_NAME:
+                qualified_identifier = qualified_identifier[1:]
+
+            try:
+                for identifier in qualified_identifier:
+                    obj = obj.setdefault(identifier, VerilogDomainObject(identifier))
+            except Exception as e:
+                log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+                return []
+
+        self.env.temp_data["verilog:namespace_stack"] = []
+        self.env.temp_data["verilog:current_object"] = obj
+        return []
+
+
+class NamespacePushDirective(SphinxDirective):
+    has_content = False
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+
+    def run(self):
+        domain = self.env.get_domain("verilog")
+        obj = self.env.temp_data.get("verilog:current_object", domain.root_object)
+        ns_stack = self.env.temp_data.get("verilog:namespace_stack", [])
+        ns_stack.append(obj)
+
+        try:
+            qualified_identifier = VerilogQualifiedIdentifier.fromstring(self.arguments[0].strip())
+        except Exception as e:
+            log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+            return []
+
+        try:
+            for identifier in qualified_identifier:
+                obj = obj.setdefault(identifier, VerilogDomainObject(identifier))
+        except Exception as e:
+            log.error(f"{self.name}: {e}", location=(self.env.docname, self.lineno))
+            return []
+
+        self.env.temp_data["verilog:namespace_stack"] = ns_stack
+        self.env.temp_data["verilog:current_object"] = obj
+        return []
+
+
+class NamespacePopDirective(SphinxDirective):
+    has_content = False
+    required_arguments = 0
+    optional_arguments = 0
+
+    def run(self):
+        ns_stack = self.env.temp_data.get("verilog:namespace_stack", [])
+        if len(ns_stack) > 0:
+            obj = ns_stack.pop()
+            self.env.temp_data["verilog:namespace_stack"] = ns_stack
+            self.env.temp_data["verilog:current_object"] = obj
+        else:
+            log.warning(f"{self.name}: pop on empty stack. Defaulting to global scope.", location=(self.env.docname, self.lineno))
+            domain = self.env.get_domain("verilog")
+            self.env.temp_data["verilog:namespace_stack"] = []
+            self.env.temp_data["verilog:current_object"] = domain.root_object
+
+        return []
 
 #-------------------------------------------------------------------------------
 
@@ -501,7 +585,7 @@ class VerilogDomainObject:
         return list(reversed(objects))
 
     def is_placeholder(self):
-        return self.parent is not None and self.parent.linktarget == self.linktarget
+        return self.parent is not None and self.linktarget and self.linktarget == self.parent.linktarget
 
     def is_only_namespace(self):
         return self.linktarget is None
@@ -542,6 +626,9 @@ class VerilogDomainObject:
     def __setitem__(self, key, obj):
         assert isinstance(obj, VerilogDomainObject)
         assert obj not in self.path()
+        key = VerilogIdentifier(key)
+        if key == VerilogIdentifier.ROOT_NAME:
+            raise ValueError(f"Invalid identifier: {key}")
 
         if key in self:
             del self[key]
@@ -589,13 +676,16 @@ class VerilogDomain(Domain):
         "module": ModuleDirective,
         "parameter": ParameterDirective,
         "port": PortDirective,
+        "namespace": NamespaceDirective,
+        "namespace-push": NamespacePushDirective,
+        "namespace-pop": NamespacePopDirective,
     }
     initial_data = {
         "objects": VerilogDomainObject(name=VerilogIdentifier.ROOT_NAME),
     }
 
     @property
-    def objects(self):
+    def root_object(self):
         return self.data["objects"]
 
     def _debug_enabled(self, cat):
@@ -607,14 +697,14 @@ class VerilogDomain(Domain):
             for child in obj.values():
                 yield from iter_tree(child)
 
-        for obj in iter_tree(self.objects):
+        for obj in iter_tree(self.root_object):
             if not (obj.is_only_namespace() or obj.is_placeholder()):
                 yield str(obj.qualified_name), str(obj.qualified_name), obj.objtype or "", obj.docname, obj.linktarget, 1
 
     def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
         if self._debug_enabled("print_objects_tree") and not hasattr(self, "_dbg_resolve_xref_executed"):
             self._dbg_resolve_xref_executed = True
-            debug("objects_tree", self.objects.visualize_tree())
+            debug("objects_tree", self.root_object.visualize_tree())
 
         try:
             target_identifier = VerilogQualifiedIdentifier.fromstring(target)
@@ -640,9 +730,9 @@ class VerilogDomain(Domain):
         # Find leading identifier's object
         leading_identifier = target_identifier[0]
         if leading_identifier == VerilogIdentifier.ROOT_NAME:
-            obj = self.objects
+            obj = self.root_object
         else:
-            obj = node.attributes.get("verilog:parent_object") or self.objects
+            obj = node.attributes.get("verilog:parent_object") or self.root_object
             while obj and leading_identifier not in obj:
                 obj = obj.parent
             if not obj:
