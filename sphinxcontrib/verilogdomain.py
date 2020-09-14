@@ -130,6 +130,7 @@ class BaseVerilogDirective(ObjectDescription):
         return (
                 (p[0] in ["KW", "ID", "TEXT"] and c[0] in ["KW", "ID", "TEXT"]) or
                 (p[0] in ["KW"] and c[-1] in ["L"]) or
+                (p[0] in ["KW"] and c[0] in ["OP"]) or
                 ((p == "SYM_ATTR_PAREN_L".split("_")) or (c == "SYM_ATTR_PAREN_R".split("_"))) or
                 (p[0] in ["SYM"] and p[-1] not in ["L"] and c[0] in ["KW", "ID", "TEXT", "OP"]) or
                 (p == "OP_EQUAL".split("_") or c == "OP_EQUAL".split("_"))
