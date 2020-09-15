@@ -1,11 +1,9 @@
-Sphinx Verilog Domain
+sphinx-verilog-domain
 =====================
 
 .. warning::
-    This extension is in development stage.
 
-.. note::
-    This extension is not a part of sphinxcontrib yet.
+    This extension is in development stage.
 
 Dependencies
 ------------
@@ -17,7 +15,7 @@ Enabling
 
 Add extension in ``conf.py``::
 
-    extensions = [ 'sphinxcontrib.verilogdomain' ]
+    extensions = [ 'sphinx_verilog_domain' ]
 
 Usage
 -----
@@ -64,7 +62,6 @@ Nesting::
 
             Reference to module ``Top1``'s port ``a``: :verilog:ref:`Top1.a`.
 
-
 Namespaces
 ^^^^^^^^^^
 
@@ -89,3 +86,12 @@ Example::
     .. verilog:port:: input inside_a_b_again;
     .. verilog:namespace::
     .. verilog:port:: input in_global_namespace;
+
+Development
+-----------
+
+To create and open the development environment with all system
+and python packages use::
+
+   make env
+   source env/conda/bin/activate sphinx-verilog-domain

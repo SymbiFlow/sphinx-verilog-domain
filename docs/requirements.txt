@@ -1,0 +1,5 @@
+git+https://github.com/SymbiFlow/sphinx_symbiflow_theme
+
+sphinx
+symbolator
+sphinxcontrib-verilog-diagrams
