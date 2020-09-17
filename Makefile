@@ -19,10 +19,27 @@ ENVIRONMENT_FILE := environment.yml
 
 include third_party/make-env/conda.mk
 
+# Create a version.py file
+VERSION_PY = sphinx_verilog_domain/version.py
+$(VERSION_PY):
+	echo "__version__ = '$$(git describe | sed -e's/v\([0-9]\+\)\.\([0-9]\+\)-\([0-9]\+\)-g[0-9a-f]\+/\1.\2.post\3/')'" > $@
+
+.PHONY: $(VERSION_PY)
+
+version:
+	$(MAKE) $(VERSION_PY)
+
+version-clean:
+	rm -f $(VERSION_PY)
+
+.PHONY: version-clean
+
+clean:: version-clean
+
 # Build the package locally
 # -------------------------------------
 
-build: $(CONDA_ENV_PYTHON)
+build: $(VERSION_PY) | $(CONDA_ENV_PYTHON)
 	$(IN_CONDA_ENV) python setup.py sdist bdist_wheel && twine check dist/*
 
 build-clean:
@@ -44,12 +61,10 @@ clean:: build-clean
 upload-test: build | $(CONDA_ENV_PYTHON)
 	$(IN_CONDA_ENV) twine upload ${PYPI_TEST}  dist/*
 
-
 .PHONY: upload-test
-
 
 upload: build | $(CONDA_ENV_PYTHON)
 	$(IN_CONDA_ENV) twine upload --verbose dist/*
 
-
 .PHONY: upload
+
