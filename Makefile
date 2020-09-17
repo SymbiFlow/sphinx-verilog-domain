@@ -20,6 +20,7 @@ ENVIRONMENT_FILE := environment.yml
 include third_party/make-env/conda.mk
 
 # Build the package locally
+# -------------------------------------
 
 build: $(CONDA_ENV_PYTHON)
 	$(IN_CONDA_ENV) python setup.py sdist bdist_wheel && twine check dist/*
@@ -33,3 +34,22 @@ build-clean:
 .PHONY: build build-clean
 
 clean:: build-clean
+
+# Upload the package to PyPi
+# -------------------------------------
+
+#PYPI_TEST = --repository-url https://test.pypi.org/legacy/
+#PYPI_TEST = --repository testpypi
+
+upload-test: build | $(CONDA_ENV_PYTHON)
+	$(IN_CONDA_ENV) twine upload ${PYPI_TEST}  dist/*
+
+
+.PHONY: upload-test
+
+
+upload: build | $(CONDA_ENV_PYTHON)
+	$(IN_CONDA_ENV) twine upload --verbose dist/*
+
+
+.PHONY: upload
