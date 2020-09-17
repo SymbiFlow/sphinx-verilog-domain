@@ -1,6 +1,10 @@
 language: minimal
 
+git:
+  depth: false
+
 before_install:
+  - git fetch --tags
   - make env
   - source env/conda/bin/activate sphinx-verilog-domain
 
