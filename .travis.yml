@@ -17,11 +17,12 @@ jobs:
 
     - stage: Deploy
       name: "PyPI"
+      before_install: null
       before_deploy:
         - sudo ln -sf /usr/bin/python3 /usr/bin/python
-        - rm -rf env
       deploy:
         provider: pypi
         username: __token__
         distributions: sdist bdist_wheel
         skip_existing: true
+        edge: true
