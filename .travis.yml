@@ -19,6 +19,7 @@ jobs:
       name: "PyPI"
       before_deploy:
         - sudo ln -sf /usr/bin/python3 /usr/bin/python
+        - rm -rf env
       deploy:
         provider: pypi
         username: __token__
