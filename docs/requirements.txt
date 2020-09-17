@@ -2,4 +2,5 @@ git+https://github.com/SymbiFlow/sphinx_symbiflow_theme
 
 sphinx
 symbolator
+yowasp_yosys
 sphinxcontrib-verilog-diagrams
