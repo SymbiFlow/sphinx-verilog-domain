@@ -1,6 +1,8 @@
 build/
 env/
 
+sphinx_verilog_domain/version.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
