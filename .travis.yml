@@ -5,6 +5,8 @@ git:
 
 before_install:
   - git fetch --tags
+
+install:
   - make env
   - source env/conda/bin/activate sphinx-verilog-domain
 
@@ -21,7 +23,7 @@ jobs:
 
     - stage: Deploy
       name: "PyPI"
-      before_install: null
+      install: null
       before_deploy:
         - sudo ln -sf /usr/bin/python3 /usr/bin/python
       deploy:
