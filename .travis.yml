@@ -4,8 +4,7 @@ git:
   depth: false
 
 before_install:
-  - git fetch origin --tags
-  - git describe
+  - make version
 
 install:
   - make env
