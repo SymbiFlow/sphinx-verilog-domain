@@ -95,3 +95,8 @@ and python packages use::
 
    make env
    source env/conda/bin/activate sphinx-verilog-domain
+
+Licence
+-------
+
+`Apache 2.0 <LICENSE>`_
